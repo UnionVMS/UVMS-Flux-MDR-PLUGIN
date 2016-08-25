@@ -7,5 +7,8 @@ public final class MdrPluginConstants {
 	public static final String DESTINATION_TYPE_QUEUE   = "javax.jms.Queue";
 	public static final String QUEUE_FLUX_RECEIVER_NAME = "ERSMDRPlugin";
 	public static final String CONNECTION_FACTORY       = "jms/RemoteConnectionFactory";
+	
+	
+	
 
 }

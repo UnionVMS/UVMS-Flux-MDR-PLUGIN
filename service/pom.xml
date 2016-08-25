@@ -28,6 +28,15 @@
             <version>${exchange.model.version}</version>
             <type>jar</type>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.wildfly/wildfly-jms-client-bom 
+          TODO Check to use provided here -->
+        <dependency>
+            <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-jms-client-bom</artifactId>
+            <version>8.2.0.Final</version>
+            <type>pom</type>
+        </dependency>
+
     </dependencies>
     
     <build>
