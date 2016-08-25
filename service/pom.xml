@@ -9,7 +9,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.plugins.flux</groupId>
         <artifactId>mdr</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.5.1-SNAPSHOT</version>
     </parent>
 
     <properties>
