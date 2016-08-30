@@ -27,7 +27,6 @@ public class FluxMessageProducer {
     private Queue             bridgeQueue              = null;
     private HornetQConnectionFactory connectionFactory = null;
     private Connection        connection               = null;
-    private Session           session                  = null;
 
     private Random randomGenerator = new Random();
 
@@ -40,10 +39,9 @@ public class FluxMessageProducer {
      */
     public void sendMessageToFluxBridge(String textMessage){
         try {
-        	loadRemoteQueueProperties();
-            connectQueue();
-            TextMessage fluxMsgToSend = prepareMessage(textMessage);
-            MessageProducer producer  = session.createProducer(bridgeQueue);
+            Session session = getNewSession();
+            TextMessage fluxMsgToSend = prepareMessage(textMessage, session);
+            MessageProducer producer  = getProducer(session, bridgeQueue);
             System.out.println("Sending a message -to flux XEu Node- with ID : " + fluxMsgToSend.getStringProperty("BUSINESS_UUID"));
             producer.send(fluxMsgToSend);
 
@@ -89,7 +87,7 @@ public class FluxMessageProducer {
      * @throws JMSException
      * @throws DatatypeConfigurationException
      */
-    private TextMessage prepareMessage(String textMessage)
+    private TextMessage prepareMessage(String textMessage, Session session)
             throws JMSException, DatatypeConfigurationException {
         TextMessage fluxMsg = session.createTextMessage();
         fluxMsg.setText(textMessage);
@@ -125,12 +123,10 @@ public class FluxMessageProducer {
         return FluxConnectionConstants.BUSINESS_PROCEDURE_PREFIX + format.format(curDate) + String.format("%02d", randomGenerator.nextInt(100));
     }
 
-    private void connectQueue() throws JMSException {
-        connection = connectionFactory.createConnection(FluxConnectionConstants.SECURITY_PRINCIPAL_ID, FluxConnectionConstants.SECURITY_PRINCIPAL_PWD);
-        session    = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        connection.start();
-    }
-
+    /**
+     * Disconnects from the queue this Producer is connected to.
+     *
+     */
     private void disconnectQueue() {
         try {
             connection.stop();
@@ -138,5 +134,43 @@ public class FluxMessageProducer {
         } catch (JMSException | NullPointerException e) {
             LOG.error("[ Error when stopping or closing JMS queue ] {}", e);
         }
+    }
+
+
+    /**
+     * Creates a MessageProducer for the given destination;
+     *
+     * @param session
+     * @param destination
+     * @return MessageProducer
+     * @throws JMSException
+     */
+    private MessageProducer getProducer(Session session, Destination destination) throws JMSException {
+        MessageProducer producer = session.createProducer(destination);
+        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+        producer.setTimeToLive(60000L);
+        return producer;
+    }
+
+    /**
+     * Creates a new JMS Session and returns it;
+     *
+     * @return Session
+     * @throws JMSException
+     */
+    private Session getNewSession() throws JMSException, NamingException {
+        loadRemoteQueueProperties();
+        if (connection == null) {
+            LOG.debug("Opening connection to JMS broker");
+            try {
+                connection = connectionFactory.createConnection(FluxConnectionConstants.SECURITY_PRINCIPAL_ID, FluxConnectionConstants.SECURITY_PRINCIPAL_PWD);
+                connection.start();
+                return connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            } catch (JMSException ex) {
+                LOG.error("Error when open connection to JMS broker", ex);
+                throw ex;
+            }
+        }
+        return connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
     }
 }
