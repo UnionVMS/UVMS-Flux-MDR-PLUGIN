@@ -1,7 +1,9 @@
 package eu.europa.ec.fisheries.uvms.plugins.flux.mdr.constants;
 
 public class FluxConnectionConstants {
-	
+
+    private FluxConnectionConstants(){}
+
 	// Connection details
     public static final String REMOTE_CONNECTION_FACTORY = "jms/RemoteConnectionFactory";
     public static final String URL_PKG_PREFIXES        = "org.jboss.naming.remote.client";

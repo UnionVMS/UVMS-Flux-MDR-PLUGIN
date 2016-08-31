@@ -5,19 +5,18 @@
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.mdr.service;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.jms.JMSException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.producer.PluginMessageProducer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.jms.JMSException;
 
 /**
  *
@@ -41,9 +40,9 @@ public class ExchangeService {
 			String messageId = producer.sendModuleMessage(text, ModuleQueue.EXCHANGE);
 			LOG.info("FluxMdrResponse Sent to Exchange module. MessageID :" + messageId);
 		} catch (ExchangeModelMarshallException e) {
-			LOG.error("Couldn't map Mdr Entity to SetFLUXMDRSyncMessageResponse.");
+			LOG.error("Couldn't map Mdr Entity to SetFLUXMDRSyncMessageResponse.", e);
 		} catch (JMSException e) {
-			LOG.error("couldn't send SetFLUXMDRSyncMessageResponse");
+			LOG.error("Couldn't send SetFLUXMDRSyncMessageResponse to Exchange module", e);
 		}
 	}
 }

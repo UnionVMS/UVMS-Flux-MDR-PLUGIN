@@ -158,8 +158,13 @@ public class FluxMessageProducer {
      * @return Session
      * @throws JMSException
      */
-    private Session getNewSession() throws JMSException, NamingException {
-        loadRemoteQueueProperties();
+    private Session getNewSession() throws JMSException {
+        try {
+            loadRemoteQueueProperties();
+        } catch (NamingException ex) {
+            LOG.error("Error when open connection to JMS broker", ex);
+            throw new JMSException(ex.getMessage());
+        }
         if (connection == null) {
             LOG.debug("Opening connection to JMS broker");
             try {
