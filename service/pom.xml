@@ -7,9 +7,9 @@
     <packaging>ejb</packaging>
 
     <parent>
-        <groupId>eu.europa.ec.fisheries.uvms.plugins.flux.mdr</groupId>
+        <groupId>eu.europa.ec.fisheries.uvms.plugins.mdr</groupId>
         <artifactId>mdr</artifactId>
-        <version>0.5.5-SNAPSHOT</version>
+        <version>0.5.4-SNAPSHOT</version>
     </parent>
 
     <properties>
