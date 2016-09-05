@@ -4,7 +4,7 @@
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins.mdr</groupId>
     <artifactId>mdr</artifactId>
-    <version>0.5.4</version>
+    <version>0.5.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>Plugin template</description>
     
@@ -88,9 +88,9 @@
             <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-    
+
     <scm>
-        <connection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/tags/Exchange/PLUGIN/mdr/mdr-0.5.4-SNAPSHOT</connection>
+        <connection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/dev/Modules/Exchange/PLUGIN/mdr</connection>
     </scm>
     
     <build>
