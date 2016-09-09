@@ -37,4 +37,6 @@ public class FluxConnectionConstants {
     // Business procedure signature
     public static final String BUSINESS_PROCEDURE_PREFIX = "BP";
     public static final String BUSINESS_UUID             = "BUSINESS_UUID";
+    
+
 }

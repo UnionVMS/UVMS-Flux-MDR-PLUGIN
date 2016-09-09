@@ -4,8 +4,8 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.v1.PluginBaseRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
 import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
-import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.StartupBean;
+import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.producer.FluxMessageProducer;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.producer.PluginMessageProducer;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.service.PluginService;
@@ -53,7 +53,7 @@ public class PluginNameEventBusListener implements MessageListener {
             switch (request.getMethod()) {
 
                 case SET_MDR_REQUEST:
-                	SetMdrPluginRequest fluxMdrRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SetMdrPluginRequest.class);
+                	SetMdrPluginRequest fluxMdrRequest            = JAXBMarshaller.unmarshallTextMessage(textMessage, SetMdrPluginRequest.class);
                 	LOG.info("Got Request in MDR PLUGIN for : " +fluxMdrRequest.getRequest()+ " Entity.");
                 	strRequest = fluxMdrRequest.getRequest();
                 	break;
@@ -67,7 +67,9 @@ public class PluginNameEventBusListener implements MessageListener {
         }
         
         // TODO: Test this producer!!
-		//fluxMsgProducer.sendMessageToFluxBridge(strRequest);
+		fluxMsgProducer.sendMessageToFluxBridge(strRequest);
 
     }
+
+
 }

@@ -13,7 +13,8 @@
     </parent>
 
     <properties>
-        <application.name>${project.parent.artifactId}</application.name> 
+        <application.name>${project.parent.artifactId}</application.name>
+        <wildfly.jms.client.version>8.2.0.Final</wildfly.jms.client.version>
         <application.responseTopicName>PLUGIN_RESPONSE</application.responseTopicName> 
         <application.groupid>${project.parent.groupId}</application.groupid> 
         <application.version>${project.parent.version}</application.version>
@@ -33,7 +34,7 @@
         <dependency>
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-jms-client-bom</artifactId>
-            <version>8.2.0.Final</version>
+            <version>${wildfly.jms.client.version}</version>
             <type>pom</type>
         </dependency>
 
