@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.europa.ec.fisheries.uvms.plugins.flux.mdr;
+package eu.europa.ec.fisheries.uvms.plugins.mdr;
 
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import java.util.Properties;

@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.plugins.flux.mdr;
+package eu.europa.ec.fisheries.uvms.plugins.mdr;
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import javax.annotation.PostConstruct;
@@ -10,6 +10,9 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.jms.JMSException;
 
+import eu.europa.ec.fisheries.uvms.plugins.mdr.mapper.ServiceMapper;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.PluginMessageProducer;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.service.ExchangeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +22,9 @@ import eu.europa.ec.fisheries.schema.exchange.service.v1.SettingListType;
 import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.mapper.ServiceMapper;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.producer.PluginMessageProducer;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.service.ExchangeService;
+
 import java.util.Map;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.service.FileHandlerBean;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.service.FileHandlerBean;
 
 @Singleton
 @Startup

@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.europa.ec.fisheries.uvms.plugins.flux.mdr.service;
+package eu.europa.ec.fisheries.uvms.plugins.mdr.service;
 
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.StartupBean;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.producer.PluginMessageProducer;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.ModuleQueue;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.PluginMessageProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

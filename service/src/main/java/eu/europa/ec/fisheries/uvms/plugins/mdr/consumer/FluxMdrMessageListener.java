@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.plugins.flux.mdr.consumer;
+package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -10,6 +10,9 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.MdrPluginConstants;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.service.ExchangeService;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.service.PluginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,10 +20,7 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginFault;
 import eu.europa.ec.fisheries.schema.exchange.registry.v1.ExchangeRegistryBaseRequest;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.StartupBean;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.constants.MdrPluginConstants;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.service.ExchangeService;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.service.PluginService;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 
 @MessageDriven(mappedName = MdrPluginConstants.FLUX_MESSAGE_IN_QUEUE, activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = MdrPluginConstants.DESTINATION_TYPE_QUEUE),
@@ -30,12 +30,12 @@ public class FluxMdrMessageListener implements MessageListener {
 	final static Logger LOG = LoggerFactory.getLogger(FluxMdrMessageListener.class);
 
 	@EJB
-	ExchangeService exchangeService;
+    ExchangeService exchangeService;
 	@EJB
 	StartupBean startupService;
 
 	@EJB
-	PluginService fluxService;
+    PluginService fluxService;
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

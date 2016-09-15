@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.europa.ec.fisheries.uvms.plugins.flux.mdr.mapper;
+package eu.europa.ec.fisheries.uvms.plugins.mdr.mapper;
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.CapabilityListType;

@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.plugins.flux.mdr.producer;
+package eu.europa.ec.fisheries.uvms.plugins.mdr.producer;
 
 import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
 import javax.annotation.Resource;
@@ -12,10 +12,10 @@ import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
+import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.ModuleQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.constants.ModuleQueue;
 import javax.jms.Queue;
 import javax.jms.Topic;
 

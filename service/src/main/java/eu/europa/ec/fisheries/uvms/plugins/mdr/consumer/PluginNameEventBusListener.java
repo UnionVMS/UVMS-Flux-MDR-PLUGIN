@@ -1,14 +1,14 @@
-package eu.europa.ec.fisheries.uvms.plugins.flux.mdr.consumer;
+package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.PluginBaseRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
 import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.StartupBean;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.producer.FluxMessageProducer;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.producer.PluginMessageProducer;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.service.PluginService;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.mapper.JAXBMarshaller;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.FluxMessageProducer;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.PluginMessageProducer;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.service.PluginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

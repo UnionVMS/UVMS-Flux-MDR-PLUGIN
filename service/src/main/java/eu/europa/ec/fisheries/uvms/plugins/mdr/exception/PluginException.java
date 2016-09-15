@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.plugins.flux.mdr.exception;
+package eu.europa.ec.fisheries.uvms.plugins.mdr.exception;
 
 public class PluginException extends Exception {
     private static final long serialVersionUID = 1L;

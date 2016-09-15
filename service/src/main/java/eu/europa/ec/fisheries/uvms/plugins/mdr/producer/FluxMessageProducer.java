@@ -1,6 +1,6 @@
-package eu.europa.ec.fisheries.uvms.plugins.flux.mdr.producer;
+package eu.europa.ec.fisheries.uvms.plugins.mdr.producer;
 
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.constants.FluxConnectionConstants;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants;
 import org.hornetq.jms.client.HornetQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

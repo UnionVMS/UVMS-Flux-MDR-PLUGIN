@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.europa.ec.fisheries.uvms.plugins.flux.mdr.service;
+package eu.europa.ec.fisheries.uvms.plugins.mdr.service;
 
 import eu.europa.ec.fisheries.schema.exchange.common.v1.AcknowledgeTypeType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.CommandType;
@@ -16,7 +16,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.EmailType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PollType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.SettingListType;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.StartupBean;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;

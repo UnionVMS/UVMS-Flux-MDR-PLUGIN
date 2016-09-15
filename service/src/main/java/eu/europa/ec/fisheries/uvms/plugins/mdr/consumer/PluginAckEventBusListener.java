@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.plugins.flux.mdr.consumer;
+package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginFault;
 import eu.europa.ec.fisheries.schema.exchange.registry.v1.ExchangeRegistryBaseRequest;
@@ -7,8 +7,8 @@ import eu.europa.ec.fisheries.schema.exchange.registry.v1.UnregisterServiceRespo
 import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.StartupBean;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mdr.service.PluginService;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.service.PluginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
