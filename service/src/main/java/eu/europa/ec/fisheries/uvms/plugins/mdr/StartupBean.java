@@ -89,7 +89,7 @@ public class StartupBean extends PluginDataHolder {
      */
     private void populateFluxParameters() {
         fluxParameters = new FluxParameters();
-        Properties plugProps = super.getPluginProperties();
+        Properties plugProps = super.getPluginApplicaitonProperties();
         fluxParameters.populate(
                 (String)plugProps.get("provider.url"),
                 (String)plugProps.get("security.principal.id"),
