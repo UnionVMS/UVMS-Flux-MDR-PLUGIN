@@ -29,6 +29,7 @@
             <version>${exchange.model.version}</version>
             <type>jar</type>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.wildfly/wildfly-jms-client-bom 
           TODO Check to use provided here -->
         <dependency>
@@ -37,7 +38,26 @@
             <version>${wildfly.jms.client.version}</version>
             <type>pom</type>
         </dependency>
-
+        <dependency>
+            <groupId>org.jboss.spec.javax.resource</groupId>
+            <artifactId>jboss-connector-api_1.5_spec</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.resource</groupId>
+            <artifactId>jboss-connector-api_1.6_spec</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>7.0</version>
+        </dependency>
     </dependencies>
     
     <build>

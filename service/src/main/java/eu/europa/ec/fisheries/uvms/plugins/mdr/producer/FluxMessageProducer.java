@@ -40,22 +40,13 @@ public class FluxMessageProducer {
         try {
             Session session           = getNewSession();
             TextMessage fluxMsgToSend = prepareMessage(textMessage, session);
-            MessageProducer producer  = getProducer(session, bridgeQueue);
-            LOG.debug("-- Sending a message -to flux XEu Node- with ID : " + fluxMsgToSend.getStringProperty("BUSINESS_UUID"));
-            producer.send(fluxMsgToSend);
+            LOG.debug("-- Sending a message -to flux XEU Node- with ID : " + fluxMsgToSend.getStringProperty("BUSINESS_UUID"));
+            getProducer(session, bridgeQueue).send(fluxMsgToSend);
             LOG.debug("-- Message sent succesfully.. OK..");
-
-            // TODO : Create test consumer; take this off when not needed!! MDB should be configured instead
-            /*JMSContext createContext = connectionFactory.createContext(FluxConnectionConstants.SECURITY_PRINCIPAL_ID, FluxConnectionConstants.SECURITY_PRINCIPAL_PWD,
-                    JMSContext.AUTO_ACKNOWLEDGE);
-            JMSConsumer testConsumer = createContext.createConsumer(bridgeQueue);
-            Message message = testConsumer.receive(5000);*/
-            //System.out.println("Receiving message from bridge.....");
-
         } catch(Exception ex){
-        	LOG.error("Error while trying to send message to FLUX node.",ex);
-		} finally {
-        	disconnectQueue();
+            LOG.error("Error while trying to send message to FLUX node.",ex);
+        } finally {
+            disconnectQueue();
         }
     }
 
@@ -132,13 +123,13 @@ public class FluxMessageProducer {
     private void loadRemoteQueueProperties() throws NamingException, JMSException {
         Properties contextProps = new Properties ();
         contextProps.put(Context.INITIAL_CONTEXT_FACTORY, FluxConnectionConstants.INITIAL_CONTEXT_FACTORY);
-        contextProps.put(Context.PROVIDER_URL,            FluxConnectionConstants.PROVIDER_URL);
+        contextProps.put(Context.PROVIDER_URL,            FluxConnectionConstants.PROVIDER_URL_WITH_PORT);
         contextProps.put(Context.SECURITY_PRINCIPAL,      FluxConnectionConstants.SECURITY_PRINCIPAL_ID);
         contextProps.put(Context.SECURITY_CREDENTIALS,    FluxConnectionConstants.SECURITY_PRINCIPAL_PWD);
         Context context   = new InitialContext(contextProps);
         connectionFactory = (HornetQConnectionFactory) context.lookup(FluxConnectionConstants.REMOTE_CONNECTION_FACTORY);
-        bridgeQueue       = (Queue) context.lookup(FluxConnectionConstants.JMS_JNDI_QUEUE);
-	}
+        bridgeQueue       = (Queue) context.lookup(FluxConnectionConstants.JMS_QUEUE_BRIDGE);
+    }
 
     private String createStringDate() {
         GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();

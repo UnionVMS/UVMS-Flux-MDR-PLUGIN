@@ -44,16 +44,13 @@ public class PluginNameEventBusListener implements MessageListener {
     public void onMessage(Message inMessage) {
 
         LOG.debug("Eventbus listener for mdr (MessageConstants.PLUGIN_SERVICE_CLASS_NAME): {}", startup.getRegisterClassName());
-
         TextMessage textMessage = (TextMessage) inMessage;
         String strRequest = null;
         try {
-
             PluginBaseRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, PluginBaseRequest.class);
             switch (request.getMethod()) {
-
                 case SET_MDR_REQUEST:
-                	SetMdrPluginRequest fluxMdrRequest            = JAXBMarshaller.unmarshallTextMessage(textMessage, SetMdrPluginRequest.class);
+                	SetMdrPluginRequest fluxMdrRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SetMdrPluginRequest.class);
                 	LOG.info("Got Request in MDR PLUGIN for : " +fluxMdrRequest.getRequest()+ " Entity.");
                 	strRequest = fluxMdrRequest.getRequest();
                 	break;
@@ -61,15 +58,15 @@ public class PluginNameEventBusListener implements MessageListener {
                     LOG.error("Not supported method : "+" Class : "+request.getClass()+". Method : "+request.getMethod());
                     break;
             }
-
         } catch (ExchangeModelMarshallException | NullPointerException e) {
             LOG.error("[ Error when receiving message in mdr " + startup.getRegisterClassName() + " ]", e);
         }
-        
-        // TODO: Test this producer!!
-		fluxMsgProducer.sendMessageToFluxBridge(strRequest);
 
+        if(strRequest != null){
+            fluxMsgProducer.sendMessageToFluxBridge(strRequest);
+        } else {
+            LOG.warn("-->>> The request to be sent to Bridge cannot be empty! Not sending anything..");
+        }
     }
-
 
 }
