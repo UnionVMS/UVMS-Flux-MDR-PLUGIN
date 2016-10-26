@@ -7,7 +7,7 @@
     <packaging>ear</packaging>
 
     <parent>
-        <groupId>eu.europa.ec.fisheries.uvms.plugins.mdr</groupId>
+        <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
         <artifactId>mdr</artifactId>
         <version>0.5.6-SNAPSHOT</version>
     </parent>

@@ -1,10 +1,13 @@
 package eu.europa.ec.fisheries.uvms.plugins.mdr.producer;
 
+import eu.europa.ec.fisheries.uvms.plugins.mdr.FluxParameters;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants;
 import org.hornetq.jms.client.HornetQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.jms.*;
@@ -24,12 +27,15 @@ import java.util.Random;
 @LocalBean
 public class FluxMessageProducer {
 
+    @EJB
+    private StartupBean startUpBean;
+
     private Queue bridgeQueue                          = null;
     private HornetQConnectionFactory connectionFactory = null;
     private Connection connection                      = null;
     private Random randomGenerator                     = new Random();
 
-    final static Logger LOG = LoggerFactory.getLogger(PluginMessageProducer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PluginMessageProducer.class);
 
     /**
      * Sends a message from this Module to the flux Bridge queue.
@@ -66,7 +72,8 @@ public class FluxMessageProducer {
         if (connection == null) {
             LOG.debug("Opening connection to JMS broker");
             try {
-                connection = connectionFactory.createConnection(FluxConnectionConstants.SECURITY_PRINCIPAL_ID, FluxConnectionConstants.SECURITY_PRINCIPAL_PWD);
+                final FluxParameters fluxParameters = startUpBean.getFluxParameters();
+                connection = connectionFactory.createConnection(fluxParameters.getProviderId(), fluxParameters.getProviderPwd());
                 connection.start();
                 return connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             } catch (JMSException ex) {
@@ -101,8 +108,7 @@ public class FluxMessageProducer {
      * @throws JMSException
      * @throws DatatypeConfigurationException
      */
-    private TextMessage prepareMessage(String textMessage, Session session)
-            throws JMSException, DatatypeConfigurationException {
+    private TextMessage prepareMessage(String textMessage, Session session) throws JMSException {
         TextMessage fluxMsg = session.createTextMessage();
         fluxMsg.setText(textMessage);
         fluxMsg.setStringProperty(FluxConnectionConstants.CONNECTOR_ID,  FluxConnectionConstants.CONNECTOR_ID_VAL);
@@ -122,10 +128,11 @@ public class FluxMessageProducer {
      */
     private void loadRemoteQueueProperties() throws NamingException, JMSException {
         Properties contextProps = new Properties ();
+        final FluxParameters fluxParameters = startUpBean.getFluxParameters();
         contextProps.put(Context.INITIAL_CONTEXT_FACTORY, FluxConnectionConstants.INITIAL_CONTEXT_FACTORY);
-        contextProps.put(Context.PROVIDER_URL,            FluxConnectionConstants.PROVIDER_URL_WITH_PORT);
-        contextProps.put(Context.SECURITY_PRINCIPAL,      FluxConnectionConstants.SECURITY_PRINCIPAL_ID);
-        contextProps.put(Context.SECURITY_CREDENTIALS,    FluxConnectionConstants.SECURITY_PRINCIPAL_PWD);
+        contextProps.put(Context.PROVIDER_URL,            fluxParameters.getProviderUrl());
+        contextProps.put(Context.SECURITY_PRINCIPAL,      fluxParameters.getProviderId());
+        contextProps.put(Context.SECURITY_CREDENTIALS,    fluxParameters.getProviderPwd());
         Context context   = new InitialContext(contextProps);
         connectionFactory = (HornetQConnectionFactory) context.lookup(FluxConnectionConstants.REMOTE_CONNECTION_FACTORY);
         bridgeQueue       = (Queue) context.lookup(FluxConnectionConstants.JMS_QUEUE_BRIDGE);
@@ -138,7 +145,8 @@ public class FluxMessageProducer {
         try {
             xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
         } catch (DatatypeConfigurationException e) {
-            e.printStackTrace();
+            LOG.error("Error occured while creating newXMLGregorianCalendar",e);
+            return null;
         }
         return xgcal.toString();
     }

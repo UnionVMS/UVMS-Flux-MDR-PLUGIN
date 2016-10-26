@@ -9,21 +9,16 @@ import eu.europa.ec.fisheries.schema.exchange.common.v1.AcknowledgeTypeType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.CommandType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.CommandTypeType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.KeyValueType;
-import eu.europa.ec.fisheries.schema.exchange.common.v1.ReportType;
-import eu.europa.ec.fisheries.schema.exchange.common.v1.ReportTypeType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.EmailType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PollType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.SettingListType;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -38,28 +33,9 @@ public class PluginService {
 
     final static Logger LOG = LoggerFactory.getLogger(PluginService.class);
 
-    /**
-     * TODO implement
-     *
-     * @param report
-     * @return
-     */
-    public AcknowledgeTypeType setReport(ReportType report) {
-        LOG.info(startupBean.getRegisterClassName() + ".report(" + report.getType().name() + ")");
-        LOG.debug("timestamp: " + report.getTimestamp());
-        MovementType movement = report.getMovement();
-        if (movement != null && ReportTypeType.MOVEMENT.equals(report.getType())) {
-            MovementPoint pos = movement.getPosition();
-            if (pos != null) {
-                LOG.info("lon: " + pos.getLongitude());
-                LOG.info("lat: " + pos.getLatitude());
-            }
-        }
-        return AcknowledgeTypeType.OK;
-    }
 
     /**
-     * TODO implement
+     * Set the commandType
      *
      * @param command
      * @return
@@ -93,7 +69,7 @@ public class PluginService {
             }
             return AcknowledgeTypeType.OK;
         } catch (Exception e) {
-            LOG.error("Failed to set config in {}", startupBean.getRegisterClassName());
+            LOG.error("Failed to set config in {}", startupBean.getRegisterClassName(),e);
             return AcknowledgeTypeType.NOK;
         }
 
@@ -111,7 +87,7 @@ public class PluginService {
             return AcknowledgeTypeType.OK;
         } catch (Exception e) {
             startupBean.setIsEnabled(Boolean.FALSE);
-            LOG.error("Failed to start {}", startupBean.getRegisterClassName());
+            LOG.error("Failed to start {}", startupBean.getRegisterClassName(),e);
             return AcknowledgeTypeType.NOK;
         }
 
@@ -129,7 +105,7 @@ public class PluginService {
             return AcknowledgeTypeType.OK;
         } catch (Exception e) {
             startupBean.setIsEnabled(Boolean.TRUE);
-            LOG.error("Failed to stop {}", startupBean.getRegisterClassName());
+            LOG.error("Failed to stop {}", startupBean.getRegisterClassName(),e);
             return AcknowledgeTypeType.NOK;
         }
     }

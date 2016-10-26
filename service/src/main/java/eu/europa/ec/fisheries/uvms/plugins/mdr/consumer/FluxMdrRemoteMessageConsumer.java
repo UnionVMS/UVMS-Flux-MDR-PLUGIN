@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
-import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginFault;
 import eu.europa.ec.fisheries.schema.exchange.registry.v1.ExchangeRegistryBaseRequest;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
@@ -24,7 +23,7 @@ import javax.jms.TextMessage;
 })
 public class FluxMdrRemoteMessageConsumer implements MessageListener {
 
-	final static Logger LOG = LoggerFactory.getLogger(FluxMdrRemoteMessageConsumer.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FluxMdrRemoteMessageConsumer.class);
 
 	@EJB
     ExchangeService exchangeService;
@@ -43,26 +42,22 @@ public class FluxMdrRemoteMessageConsumer implements MessageListener {
 		TextMessage textMessage = (TextMessage) inMessage;
 
 		try {
-			LOG.info("Sending Message -  Response from Flux - to Exchange Module.");
+			LOG.info("Sending Message [Response from Flux]  to Exchange Module.");
 			exchangeService.sendFLUXMDRResponseMessageToExchange(textMessage.getText());
 			LOG.info(">>>>>>>>>>>>>>> Message sent successfully back to Exchange Module.");
 		} catch (JMSException e1) {
-			LOG.error("Error while marshalling Flux Response.");
-			e1.printStackTrace();
+			LOG.error("Error while marshalling Flux Response.",e1);
 		}
 
 	
 	}
 
-	private void handlePluginFault(PluginFault fault) {
-		LOG.error(startupService.getPluginResponseSubscriptionName() + " received fault " + fault.getCode() + " : "
-				+ fault.getMessage());
-	}
 
 	private ExchangeRegistryBaseRequest tryConsumeRegistryBaseRequest(TextMessage textMessage) {
 		try {
 			return JAXBMarshaller.unmarshallTextMessage(textMessage, ExchangeRegistryBaseRequest.class);
 		} catch (ExchangeModelMarshallException e) {
+			LOG.error("Errorr when tryConsumeRegistryBaseRequest",e);
 			return null;
 		}
 	}
