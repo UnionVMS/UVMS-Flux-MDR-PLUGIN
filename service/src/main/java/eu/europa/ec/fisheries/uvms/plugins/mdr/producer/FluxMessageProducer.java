@@ -144,11 +144,11 @@ public class FluxMessageProducer {
         XMLGregorianCalendar xgcal = null;
         try {
             xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-        } catch (DatatypeConfigurationException e) {
+            return xgcal.toString();
+        } catch (DatatypeConfigurationException | NullPointerException e) {
             LOG.error("Error occured while creating newXMLGregorianCalendar",e);
             return null;
         }
-        return xgcal.toString();
     }
 
     /**

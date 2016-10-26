@@ -17,17 +17,17 @@ import java.util.concurrent.ConcurrentMap;
  */
 public abstract class PluginDataHolder {
 
-    public final static String PLUGIN_PROPERTIES_KEY = "mdr.properties";
-    public final static String PROPERTIES_KEY = "settings.properties";
-    public final static String CAPABILITIES_KEY = "capabilities.properties";
+    public static final String PLUGIN_PROPERTIES_KEY = "mdr.properties";
+    public static final String PROPERTIES_KEY = "settings.properties";
+    public static final String CAPABILITIES_KEY = "capabilities.properties";
 
     private Properties mdrApplicaitonProperties;
     private Properties mdrProperties;
     private Properties mdrCapabilities;
 
-    private final ConcurrentHashMap<String, String> settings = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, String> capabilities = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, SetReportMovementType> cachedMovement = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, String> settings = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, String> capabilities = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, SetReportMovementType> cachedMovement = new ConcurrentHashMap<>();
 
     public ConcurrentMap<String, String> getSettings() {
         return settings;
