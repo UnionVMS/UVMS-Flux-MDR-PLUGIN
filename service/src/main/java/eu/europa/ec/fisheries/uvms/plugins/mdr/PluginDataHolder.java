@@ -18,8 +18,8 @@ import java.util.concurrent.ConcurrentMap;
 public abstract class PluginDataHolder {
 
     public static final String PLUGIN_PROPERTIES_KEY = "mdr.properties";
-    public static final String PROPERTIES_KEY = "settings.properties";
-    public static final String CAPABILITIES_KEY = "capabilities.properties";
+    public static final String PROPERTIES_KEY        = "settings.properties";
+    public static final String CAPABILITIES_KEY      = "capabilities.properties";
 
     private Properties mdrApplicaitonProperties;
     private Properties mdrProperties;
