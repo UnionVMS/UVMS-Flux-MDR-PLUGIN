@@ -4,9 +4,17 @@ public final class MdrPluginConstants {
 
 	private MdrPluginConstants(){}
 
-	public static final String FLUX_MESSAGE_IN_QUEUE    = "jms/queue/mdrin";
-	public static final String CONNECTION_TYPE          = "javax.jms.MessageListener";
-	public static final String DESTINATION_TYPE_QUEUE   = "javax.jms.Queue";
-	public static final String QUEUE_FLUX_RECEIVER_NAME = "ERSMDRPlugin";
-	public static final String CONNECTION_FACTORY       = "jms/RemoteConnectionFactory";
+	public static final String MDR_GROUP_ID_ARTIFACT_ID    = "eu.europa.ec.fisheries.uvms.plugins.mdr";
+	public static final String MDR_GROUP_ID_ARTIFACT_ID_AC = "eu.europa.ec.fisheries.uvms.plugins.mdrPLUGIN_RESPONSE";
+
+	public static final String CLIENT_ID_EV         = MDR_GROUP_ID_ARTIFACT_ID;
+	public static final String SUBSCRIPTION_NAME_EV = MDR_GROUP_ID_ARTIFACT_ID;
+	public static final String MESSAGE_SELECTOR_EV  = "ServiceName='"+MDR_GROUP_ID_ARTIFACT_ID+"'";
+
+	public static final String CLIENT_ID_AC 		= MDR_GROUP_ID_ARTIFACT_ID_AC;
+	public static final String SUBSCRIPTION_NAME_AC = MDR_GROUP_ID_ARTIFACT_ID_AC;
+	public static final String MESSAGE_SELECTOR_AC  = "ServiceName='"+MDR_GROUP_ID_ARTIFACT_ID_AC+"'";
+
+    public static final String DURABLE = "Durable";
+
 }

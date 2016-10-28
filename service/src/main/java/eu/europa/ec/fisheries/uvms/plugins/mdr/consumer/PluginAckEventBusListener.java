@@ -8,7 +8,7 @@ import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstant
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.service.PluginService;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.MdrPluginConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,10 +18,13 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 @MessageDriven(mappedName = ExchangeModelConstants.PLUGIN_EVENTBUS, activationConfig = {
-        @ActivationConfigProperty(propertyName = "messagingType", propertyValue = ExchangeModelConstants.CONNECTION_TYPE),
-        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = ExchangeModelConstants.DESTINATION_TYPE_TOPIC),
-        @ActivationConfigProperty(propertyName = "destination", propertyValue = ExchangeModelConstants.EVENTBUS_NAME)
+        @ActivationConfigProperty(propertyName = "messagingType",          propertyValue = ExchangeModelConstants.CONNECTION_TYPE),
+        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = MdrPluginConstants.DURABLE),
+        @ActivationConfigProperty(propertyName = "destinationType",        propertyValue = ExchangeModelConstants.DESTINATION_TYPE_TOPIC),
+        @ActivationConfigProperty(propertyName = "destination",            propertyValue = ExchangeModelConstants.EVENTBUS_NAME),
+        @ActivationConfigProperty(propertyName = "subscriptionName",       propertyValue = MdrPluginConstants.SUBSCRIPTION_NAME_AC),
+        @ActivationConfigProperty(propertyName = "clientId",               propertyValue = MdrPluginConstants.CLIENT_ID_AC),
+        @ActivationConfigProperty(propertyName = "messageSelector",        propertyValue = MdrPluginConstants.MESSAGE_SELECTOR_AC)
 })
 public class PluginAckEventBusListener implements MessageListener {
 
@@ -29,9 +32,6 @@ public class PluginAckEventBusListener implements MessageListener {
 
     @EJB
     StartupBean startupService;
-
-    @EJB
-    PluginService mdrService;
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

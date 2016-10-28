@@ -5,6 +5,7 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
 import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.MdrPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.FluxMessageProducer;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.PluginMessageProducer;
@@ -18,10 +19,13 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 @MessageDriven(mappedName = ExchangeModelConstants.PLUGIN_EVENTBUS, activationConfig = {
-    @ActivationConfigProperty(propertyName = "messagingType", propertyValue = ExchangeModelConstants.CONNECTION_TYPE),
-    @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = ExchangeModelConstants.DESTINATION_TYPE_TOPIC),
-    @ActivationConfigProperty(propertyName = "destination", propertyValue = ExchangeModelConstants.EVENTBUS_NAME)
+        @ActivationConfigProperty(propertyName = "messagingType",          propertyValue = ExchangeModelConstants.CONNECTION_TYPE),
+        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
+        @ActivationConfigProperty(propertyName = "destinationType",        propertyValue = ExchangeModelConstants.DESTINATION_TYPE_TOPIC),
+        @ActivationConfigProperty(propertyName = "destination",            propertyValue = ExchangeModelConstants.EVENTBUS_NAME),
+        @ActivationConfigProperty(propertyName = "subscriptionName",       propertyValue = MdrPluginConstants.SUBSCRIPTION_NAME_EV),
+        @ActivationConfigProperty(propertyName = "clientId",               propertyValue = MdrPluginConstants.CLIENT_ID_EV),
+        @ActivationConfigProperty(propertyName = "messageSelector",        propertyValue = MdrPluginConstants.MESSAGE_SELECTOR_EV)
 })
 public class PluginNameEventBusListener implements MessageListener {
 
@@ -35,7 +39,7 @@ public class PluginNameEventBusListener implements MessageListener {
 
     @EJB
     StartupBean startup;
-    
+
     @EJB
     FluxMessageProducer fluxMsgProducer;
 
@@ -50,19 +54,19 @@ public class PluginNameEventBusListener implements MessageListener {
             PluginBaseRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, PluginBaseRequest.class);
             switch (request.getMethod()) {
                 case SET_MDR_REQUEST:
-                	SetMdrPluginRequest fluxMdrRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SetMdrPluginRequest.class);
-                	LOG.info("Got Request in MDR PLUGIN for : " +fluxMdrRequest.getRequest()+ " Entity.");
-                	strRequest = fluxMdrRequest.getRequest();
-                	break;
+                    SetMdrPluginRequest fluxMdrRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SetMdrPluginRequest.class);
+                    LOG.info("Got Request in MDR PLUGIN for : " + fluxMdrRequest.getRequest() + " Entity.");
+                    strRequest = fluxMdrRequest.getRequest();
+                    break;
                 default:
-                    LOG.error("Not supported method : "+" Class : "+request.getClass()+". Method : "+request.getMethod());
+                    LOG.error("Not supported method : " + " Class : " + request.getClass() + ". Method : " + request.getMethod());
                     break;
             }
         } catch (ExchangeModelMarshallException | NullPointerException e) {
             LOG.error("[ Error when receiving message in mdr " + startup.getRegisterClassName() + " ]", e);
         }
 
-        if(strRequest != null){
+        if (strRequest != null) {
             fluxMsgProducer.sendMessageToFluxBridge(strRequest);
         } else {
             LOG.warn("-->>> The request to be sent to Bridge cannot be empty! Not sending anything..");
