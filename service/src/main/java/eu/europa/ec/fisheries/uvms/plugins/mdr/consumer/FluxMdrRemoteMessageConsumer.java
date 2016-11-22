@@ -38,18 +38,18 @@ public class FluxMdrRemoteMessageConsumer implements MessageListener {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void onMessage(Message inMessage) {
 
-		LOG.info("\n\n>>>>>>>>>>>>>>> Got message in Flux MDR plugin queue <<<<<<<<<<<<<<<<<<<\n\n");
-		TextMessage textMessage = (TextMessage) inMessage;
-
+		LOG.info("\n\n>>>>>>>>>>>>>>> Got message (from Flux) in Flux MDR plugin queue <<<<<<<<<<<<<<<<<<<\n\n");
+	    TextMessage textMessage = (TextMessage) inMessage;
 		try {
 			LOG.info("Sending Message [Response from Flux]  to Exchange Module.");
+			if(LOG.isDebugEnabled()){
+				LOG.debug("\n\n\nMESSAGE CONTENT : \n\n "+ textMessage.getText() + "\n\n\n");
+			}
 			exchangeService.sendFLUXMDRResponseMessageToExchange(textMessage.getText());
 			LOG.info(">>>>>>>>>>>>>>> Message sent successfully back to Exchange Module.");
 		} catch (JMSException e1) {
 			LOG.error("Error while marshalling Flux Response.",e1);
 		}
-
-	
 	}
 
 

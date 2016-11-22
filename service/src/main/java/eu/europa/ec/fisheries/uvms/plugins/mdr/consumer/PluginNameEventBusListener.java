@@ -20,7 +20,7 @@ import javax.jms.TextMessage;
 
 @MessageDriven(mappedName = ExchangeModelConstants.PLUGIN_EVENTBUS, activationConfig = {
         @ActivationConfigProperty(propertyName = "messagingType",          propertyValue = ExchangeModelConstants.CONNECTION_TYPE),
-        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
+        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = MdrPluginConstants.DURABLE),
         @ActivationConfigProperty(propertyName = "destinationType",        propertyValue = ExchangeModelConstants.DESTINATION_TYPE_TOPIC),
         @ActivationConfigProperty(propertyName = "destination",            propertyValue = ExchangeModelConstants.EVENTBUS_NAME),
         @ActivationConfigProperty(propertyName = "subscriptionName",       propertyValue = MdrPluginConstants.SUBSCRIPTION_NAME_EV),
@@ -55,7 +55,7 @@ public class PluginNameEventBusListener implements MessageListener {
             switch (request.getMethod()) {
                 case SET_MDR_REQUEST:
                     SetMdrPluginRequest fluxMdrRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SetMdrPluginRequest.class);
-                    LOG.info("Got Request in MDR PLUGIN for : " + fluxMdrRequest.getRequest() + " Entity.");
+                    LOG.info("\n\nGot Request in MDR PLUGIN : " + fluxMdrRequest.getRequest());
                     strRequest = fluxMdrRequest.getRequest();
                     break;
                 default:
@@ -67,10 +67,16 @@ public class PluginNameEventBusListener implements MessageListener {
         }
 
         if (strRequest != null) {
-            fluxMsgProducer.sendMessageToFluxBridge(strRequest);
+            fluxMsgProducer.sendMessageToFluxBridge(makeItCompatibleWithVersion16B(strRequest));
         } else {
             LOG.warn("-->>> The request to be sent to Bridge cannot be empty! Not sending anything..");
         }
+    }
+
+    private String makeItCompatibleWithVersion16B(String strRequest) {
+        return strRequest.replace("UnqualifiedDataType:20", "UnqualifiedDataType:18")
+                        .replace("ReusableAggregateBusinessInformationEntity:20", "ReusableAggregateBusinessInformationEntity:18").
+                                replace("FLUXMDRQueryMessage:5","FLUXMDRQueryMessage:3");
     }
 
 }

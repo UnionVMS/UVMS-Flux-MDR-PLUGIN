@@ -11,17 +11,14 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.jms.*;
+import javax.jms.Queue;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
 
 @Stateless
 @LocalBean
@@ -156,10 +153,7 @@ public class FluxMessageProducer {
      * @return String
      */
     private String createBusinessUUID(){
-        // Prepare unique Business Process ID
-        Date curDate = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("ddHHmmss");
-        return FluxConnectionConstants.BUSINESS_PROCEDURE_PREFIX + format.format(curDate) + String.format("%02d", randomGenerator.nextInt(100));
+        return UUID.randomUUID().toString();
     }
 
     /**
