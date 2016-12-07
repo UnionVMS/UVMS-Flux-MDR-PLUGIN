@@ -1,3 +1,13 @@
+/*
+Developed by the European Commission - Directorate General for Maritime Affairs and Fisheries @ European Union, 2015-2016.
+
+This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can redistribute it
+and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of
+the License, or any later version. The IFDM Suite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+details. You should have received a copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
+
+ */
 package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
 import eu.europa.ec.fisheries.schema.exchange.registry.v1.ExchangeRegistryBaseRequest;
@@ -38,18 +48,18 @@ public class FluxMdrRemoteMessageConsumer implements MessageListener {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void onMessage(Message inMessage) {
 
-		LOG.info("\n\n>>>>>>>>>>>>>>> Got message in Flux MDR plugin queue <<<<<<<<<<<<<<<<<<<\n\n");
-		TextMessage textMessage = (TextMessage) inMessage;
-
+		LOG.trace("\n\n3.9.\tEFFORT_ZONE>>>>>>>>>>>>>>> Got message (from Flux) in Flux MDR plugin queue <<<<<<<<<<<<<<<<<<<\n\n");
+	    TextMessage textMessage = (TextMessage) inMessage;
 		try {
-			LOG.info("Sending Message [Response from Flux]  to Exchange Module.");
+			LOG.trace("Sending Message [Response from Flux]  to Exchange Module.");
+			if(LOG.isDebugEnabled()){
+				LOG.debug("\n\n\nMESSAGE CONTENT : \n\n "+ textMessage.getText() + "\n\n\n");
+			}
 			exchangeService.sendFLUXMDRResponseMessageToExchange(textMessage.getText());
-			LOG.info(">>>>>>>>>>>>>>> Message sent successfully back to Exchange Module.");
+			LOG.trace(">>>>>>>>>>>>>>> Message sent successfully back to Exchange Module.");
 		} catch (JMSException e1) {
 			LOG.error("Error while marshalling Flux Response.",e1);
 		}
-
-	
 	}
 
 

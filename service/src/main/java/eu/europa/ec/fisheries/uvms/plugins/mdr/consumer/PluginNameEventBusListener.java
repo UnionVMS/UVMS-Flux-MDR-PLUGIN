@@ -1,4 +1,13 @@
-package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
+/*
+Developed by the European Commission - Directorate General for Maritime Affairs and Fisheries @ European Union, 2015-2016.
+
+This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can redistribute it
+and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of
+the License, or any later version. The IFDM Suite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+details. You should have received a copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
+
+ */package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.PluginBaseRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
@@ -20,7 +29,7 @@ import javax.jms.TextMessage;
 
 @MessageDriven(mappedName = ExchangeModelConstants.PLUGIN_EVENTBUS, activationConfig = {
         @ActivationConfigProperty(propertyName = "messagingType",          propertyValue = ExchangeModelConstants.CONNECTION_TYPE),
-        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
+        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = MdrPluginConstants.DURABLE),
         @ActivationConfigProperty(propertyName = "destinationType",        propertyValue = ExchangeModelConstants.DESTINATION_TYPE_TOPIC),
         @ActivationConfigProperty(propertyName = "destination",            propertyValue = ExchangeModelConstants.EVENTBUS_NAME),
         @ActivationConfigProperty(propertyName = "subscriptionName",       propertyValue = MdrPluginConstants.SUBSCRIPTION_NAME_EV),
@@ -55,7 +64,7 @@ public class PluginNameEventBusListener implements MessageListener {
             switch (request.getMethod()) {
                 case SET_MDR_REQUEST:
                     SetMdrPluginRequest fluxMdrRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SetMdrPluginRequest.class);
-                    LOG.info("Got Request in MDR PLUGIN for : " + fluxMdrRequest.getRequest() + " Entity.");
+                    LOG.info("\n\nGot Request in MDR PLUGIN : " + fluxMdrRequest.getRequest());
                     strRequest = fluxMdrRequest.getRequest();
                     break;
                 default:
@@ -67,10 +76,16 @@ public class PluginNameEventBusListener implements MessageListener {
         }
 
         if (strRequest != null) {
-            fluxMsgProducer.sendMessageToFluxBridge(strRequest);
+            fluxMsgProducer.sendMessageToFluxBridge(makeItCompatibleWithVersion16B(strRequest));
         } else {
             LOG.warn("-->>> The request to be sent to Bridge cannot be empty! Not sending anything..");
         }
+    }
+
+    private String makeItCompatibleWithVersion16B(String strRequest) {
+        return strRequest.replace("UnqualifiedDataType:20", "UnqualifiedDataType:18")
+                        .replace("ReusableAggregateBusinessInformationEntity:20", "ReusableAggregateBusinessInformationEntity:18").
+                                replace("FLUXMDRQueryMessage:5","FLUXMDRQueryMessage:3");
     }
 
 }

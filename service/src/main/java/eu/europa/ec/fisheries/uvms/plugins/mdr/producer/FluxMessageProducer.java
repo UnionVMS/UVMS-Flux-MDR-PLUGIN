@@ -1,4 +1,13 @@
-package eu.europa.ec.fisheries.uvms.plugins.mdr.producer;
+/*
+Developed by the European Commission - Directorate General for Maritime Affairs and Fisheries @ European Union, 2015-2016.
+
+This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can redistribute it
+and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of
+the License, or any later version. The IFDM Suite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+details. You should have received a copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
+
+ */package eu.europa.ec.fisheries.uvms.plugins.mdr.producer;
 
 import eu.europa.ec.fisheries.uvms.plugins.mdr.FluxParameters;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
@@ -11,17 +20,14 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.jms.*;
+import javax.jms.Queue;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
 
 @Stateless
 @LocalBean
@@ -46,9 +52,7 @@ public class FluxMessageProducer {
         try {
             Session session           = getNewSession();
             TextMessage fluxMsgToSend = prepareMessage(textMessage, session);
-            LOG.debug("-- Sending a message -to flux XEU Node- with ID : " + fluxMsgToSend.getStringProperty("BUSINESS_UUID"));
             getProducer(session, bridgeQueue).send(fluxMsgToSend);
-            LOG.debug("-- Message sent succesfully.. OK..");
         } catch(Exception ex){
             LOG.error("Error while trying to send message to FLUX node.",ex);
         } finally {
@@ -156,10 +160,7 @@ public class FluxMessageProducer {
      * @return String
      */
     private String createBusinessUUID(){
-        // Prepare unique Business Process ID
-        Date curDate = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("ddHHmmss");
-        return FluxConnectionConstants.BUSINESS_PROCEDURE_PREFIX + format.format(curDate) + String.format("%02d", randomGenerator.nextInt(100));
+        return UUID.randomUUID().toString();
     }
 
     /**

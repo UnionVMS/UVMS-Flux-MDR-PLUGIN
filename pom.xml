@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
-    <artifactId>mdr</artifactId>
+    <artifactId>mdr-plugin</artifactId>
     <version>0.5.7-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <description>Plugin template</description>
+    <description>Plugin for MDR related communication with FLUX</description>
 
     <properties>
         <!-- sonar -->
@@ -114,11 +115,14 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-mdr-plugin.git</connection>
-        <developerConnection>scm:git:https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-mdr-plugin.git</developerConnection>
+        <connection>scm:git:https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-mdr-plugin.git
+        </connection>
+        <developerConnection>
+            scm:git:https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-mdr-plugin.git
+        </developerConnection>
         <url>https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <build>
         <pluginManagement>
@@ -206,6 +210,23 @@
                         <phase>verify</phase>
                         <goals>
                             <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>eu.europa.ec.fisheries.uvms.mavenPlugins</groupId>
+                <artifactId>european-license-checker-maven-plugin</artifactId>
+                <version>1.1-SNAPSHOT</version>
+                <configuration>
+                    <overridenBasePath>${basedir}</overridenBasePath>
+                    <failBuildOnError>true</failBuildOnError>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>europeanLicenseHeaderChecker</goal>
                         </goals>
                     </execution>
                 </executions>
