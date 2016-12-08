@@ -48,7 +48,7 @@ public class FluxMdrRemoteMessageConsumer implements MessageListener {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void onMessage(Message inMessage) {
 
-		LOG.trace("\n\n3.9.\tEFFORT_ZONE>>>>>>>>>>>>>>> Got message (from Flux) in Flux MDR plugin queue <<<<<<<<<<<<<<<<<<<\n\n");
+		LOG.trace("\n\n3.9.\t>>>>>>>>>>>>>>> Got message (from Flux) in Flux MDR plugin queue <<<<<<<<<<<<<<<<<<<\n\n");
 	    TextMessage textMessage = (TextMessage) inMessage;
 		try {
 			LOG.trace("Sending Message [Response from Flux]  to Exchange Module.");
