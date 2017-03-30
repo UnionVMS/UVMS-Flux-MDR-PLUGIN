@@ -12,7 +12,6 @@ package eu.europa.ec.fisheries.uvms.plugins.mdr.service;
 
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.PluginMessageProducer;
 import org.slf4j.Logger;
@@ -24,6 +23,7 @@ import javax.ejb.Stateless;
 import javax.jms.JMSException;
 
 /**
+ * EJB needed for sending messages to Exchange queue
  *
  * @author akovi
  */
@@ -32,9 +32,6 @@ import javax.jms.JMSException;
 public class ExchangeService {
 
 	final static Logger LOG = LoggerFactory.getLogger(ExchangeService.class);
-
-	@EJB
-	StartupBean startupBean;
 
 	@EJB
 	PluginMessageProducer producer;
