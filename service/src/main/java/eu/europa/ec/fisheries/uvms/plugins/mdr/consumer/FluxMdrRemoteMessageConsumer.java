@@ -10,13 +10,8 @@ details. You should have received a copy of the GNU General Public License along
  */
 package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
-import eu.europa.ec.fisheries.schema.exchange.registry.v1.ExchangeRegistryBaseRequest;
-import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
-import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.service.ExchangeService;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.service.PluginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,37 +33,21 @@ public class FluxMdrRemoteMessageConsumer implements MessageListener {
 	@EJB
     ExchangeService exchangeService;
 
-	@EJB
-	StartupBean startupService;
-
-	@EJB
-    PluginService fluxService;
-
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void onMessage(Message inMessage) {
 
-		LOG.trace("\n\n3.9.\t>>>>>>>>>>>>>>> Got message (from Flux) in Flux MDR plugin queue <<<<<<<<<<<<<<<<<<<\n\n");
+		LOG.info("\n\n\t>>>>>>>>>>>>>>> Got message (from Flux) in Flux MDR plugin queue <<<<<<<<<<<<<<<<<<<\n\n");
 	    TextMessage textMessage = (TextMessage) inMessage;
 		try {
-			LOG.trace("Sending Message [Response from Flux]  to Exchange Module.");
+			LOG.info("Sending Message [Response from Flux]  to Exchange Module.");
 			if(LOG.isDebugEnabled()){
-				LOG.debug("\n\n\nMESSAGE CONTENT : \n\n "+ textMessage.getText() + "\n\n\n");
+				LOG.debug("\nMESSAGE CONTENT : \n\n "+ textMessage.getText() + "\n\n");
 			}
 			exchangeService.sendFLUXMDRResponseMessageToExchange(textMessage.getText());
-			LOG.trace(">>>>>>>>>>>>>>> Message sent successfully back to Exchange Module.");
+			LOG.info(">>>>>>>>>>>>>>> Message sent successfully back to Exchange Module.");
 		} catch (JMSException e1) {
 			LOG.error("Error while marshalling Flux Response.",e1);
-		}
-	}
-
-
-	private ExchangeRegistryBaseRequest tryConsumeRegistryBaseRequest(TextMessage textMessage) {
-		try {
-			return JAXBMarshaller.unmarshallTextMessage(textMessage, ExchangeRegistryBaseRequest.class);
-		} catch (ExchangeModelMarshallException e) {
-			LOG.error("Errorr when tryConsumeRegistryBaseRequest",e);
-			return null;
 		}
 	}
 }

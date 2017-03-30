@@ -7,7 +7,8 @@ the License, or any later version. The IFDM Suite is distributed in the hope tha
 without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
 details. You should have received a copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
 
- */package eu.europa.ec.fisheries.uvms.plugins.mdr.producer;
+ */
+package eu.europa.ec.fisheries.uvms.plugins.mdr.producer;
 
 import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.ModuleQueue;
@@ -20,9 +21,11 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.*;
+import javax.transaction.Transactional;
 
 @Stateless
 @LocalBean
+@Transactional
 public class PluginMessageProducer {
 
     @Resource(mappedName = ExchangeModelConstants.EXCHANGE_MESSAGE_IN_QUEUE)
@@ -42,7 +45,7 @@ public class PluginMessageProducer {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendResponseMessage(String text, TextMessage requestMessage) throws JMSException {
         try {
-            connectQueue();
+            openConnection();
             TextMessage message = session.createTextMessage();
             message.setJMSDestination(requestMessage.getJMSReplyTo());
             message.setJMSCorrelationID(requestMessage.getJMSMessageID());
@@ -52,14 +55,14 @@ public class PluginMessageProducer {
             LOG.error("[ Error when sending jms message. ] {}", e);
             throw new JMSException(e.getMessage());
         } finally {
-            disconnectQueue();
+            closeConnection();
         }
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, ModuleQueue queue) throws JMSException {
         try {
-            connectQueue();
+            openConnection();
             TextMessage message = session.createTextMessage();
             message.setText(text);
             switch (queue) {
@@ -75,14 +78,14 @@ public class PluginMessageProducer {
             LOG.error("[ Error when sending data source message. ] {}", e);
             throw new JMSException(e.getMessage());
         } finally {
-            disconnectQueue();
+            closeConnection();
         }
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendEventBusMessage(String text, String serviceName) throws JMSException {
         try {
-            connectQueue();
+            openConnection();
             TextMessage message = session.createTextMessage();
             message.setText(text);
             message.setStringProperty(ExchangeModelConstants.SERVICE_NAME, serviceName);
@@ -92,22 +95,31 @@ public class PluginMessageProducer {
             LOG.error("[ Error when sending message. ] {0}", e);
             throw new JMSException(e.getMessage());
         } finally {
-            disconnectQueue();
+            closeConnection();
         }
     }
 
-    private void connectQueue() throws JMSException {
+    private void openConnection() throws JMSException {
         connection = connectionFactory.createConnection();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         connection.start();
     }
 
-    private void disconnectQueue() {
+    /**
+     * Disconnects from the actual connection if it is still active;
+     */
+    protected void closeConnection() {
         try {
-            connection.stop();
-            connection.close();
+            if (session != null) {
+                session.close();
+            }
+            if (connection != null) {
+                connection.stop();
+                connection.close();
+            }
+            LOG.info("Succesfully disconnected from FLUX BRIDGE Remote queue.");
         } catch (JMSException e) {
-            LOG.error("[ Error when stopping or closing JMS queue. ] {}", e);
+            LOG.error("[ Error when stopping or closing JMS queue ] {}", e);
         }
     }
 }

@@ -17,8 +17,6 @@ import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.MdrPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.FluxMessageProducer;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.PluginMessageProducer;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.service.PluginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +37,6 @@ import javax.jms.TextMessage;
 public class PluginNameEventBusListener implements MessageListener {
 
     final static Logger LOG = LoggerFactory.getLogger(PluginNameEventBusListener.class);
-
-    @EJB
-    PluginService service;
-
-    @EJB
-    PluginMessageProducer messageProducer;
 
     @EJB
     StartupBean startup;
@@ -72,20 +64,14 @@ public class PluginNameEventBusListener implements MessageListener {
                     break;
             }
         } catch (ExchangeModelMarshallException | NullPointerException e) {
-            LOG.error("[ Error when receiving message in mdr " + startup.getRegisterClassName() + " ]", e);
+            LOG.error("[ Error when receiving message in mdr plugin" + startup.getRegisterClassName() + " ]", e);
         }
 
         if (strRequest != null) {
-            fluxMsgProducer.sendMessageToFluxBridge(makeItCompatibleWithVersion16B(strRequest));
+            fluxMsgProducer.sendMessageToFluxBridge(strRequest);
         } else {
             LOG.warn("-->>> The request to be sent to Bridge cannot be empty! Not sending anything..");
         }
-    }
-
-    private String makeItCompatibleWithVersion16B(String strRequest) {
-        return strRequest.replace("UnqualifiedDataType:20", "UnqualifiedDataType:18")
-                        .replace("ReusableAggregateBusinessInformationEntity:20", "ReusableAggregateBusinessInformationEntity:18").
-                                replace("FLUXMDRQueryMessage:5","FLUXMDRQueryMessage:3");
     }
 
 }

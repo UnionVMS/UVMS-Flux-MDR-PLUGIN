@@ -79,7 +79,7 @@ public class StartupBean extends PluginDataHolder {
         serviceType = ServiceMapper.getServiceType(
                 getRegisterClassName(),
                 getApplicaionName(),
-                "A good description for the plugin",
+                "This plugin handles sending and receiving MDR related messages to and from FLUX TL.",
                 PluginType.SATELLITE_RECEIVER,
                 getPluginResponseSubscriptionName());
         register();
@@ -154,15 +154,19 @@ public class StartupBean extends PluginDataHolder {
     public String getPluginResponseSubscriptionName() {
         return getRegisterClassName() + getSetting("application.responseTopicName");
     }
+
     public String getResponseTopicMessageName() {
         return getSetting("application.groupid");
     }
+
     public String getRegisterClassName() {
         return registeredClassName;
     }
+
     public String getApplicaionName() {
         return getSetting("application.name");
     }
+
     public String getSetting(String key) {
         try {
             LOG.debug("Trying to get setting {} ", registeredClassName + "." + key);
@@ -172,6 +176,7 @@ public class StartupBean extends PluginDataHolder {
             return null;
         }
     }
+
     public boolean isWaitingForResponse() {
         return waitingForResponse;
     }
