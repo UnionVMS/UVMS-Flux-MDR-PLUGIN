@@ -214,10 +214,10 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+<!--            <plugin>
                 <groupId>eu.europa.ec.fisheries.uvms.mavenPlugins</groupId>
                 <artifactId>european-license-checker-maven-plugin</artifactId>
-                <version>1.1-SNAPSHOT</version>
+                <version>1.2-SNAPSHOT</version>
                 <configuration>
                     <overridenBasePath>${basedir}</overridenBasePath>
                     <failBuildOnError>true</failBuildOnError>
@@ -230,7 +230,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 
