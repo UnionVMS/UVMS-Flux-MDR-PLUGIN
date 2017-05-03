@@ -100,9 +100,10 @@ public class StartupBean extends PluginDataHolder {
         fluxParameters = new FluxParameters();
         Properties plugProps = super.getPluginApplicaitonProperties();
         fluxParameters.populate(
-                (String)plugProps.get("provider.url"),
-                (String)plugProps.get("security.principal.id"),
-                (String)plugProps.get("security.principal.pwd"));
+                (String) plugProps.get("provider.url"),
+                (String) plugProps.get("security.principal.id"),
+                (String) plugProps.get("security.principal.pwd"),
+                (String) plugProps.get("initial.context.factory"));
     }
 
     @PreDestroy

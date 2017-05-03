@@ -23,6 +23,7 @@
         <provider.url>http-remoting://10.155.0.10:8180</provider.url>
         <security.principal.id>fluxq</security.principal.id>
         <security.principal.pwd>testpassword</security.principal.pwd>
+        <initial.context.factory>org.jboss.naming.remote.client.InitialContextFactory</initial.context.factory>
     </properties>
 
     <dependencies>

@@ -12,7 +12,6 @@ package eu.europa.ec.fisheries.uvms.plugins.mdr.producer;
 
 import eu.europa.ec.fisheries.uvms.plugins.mdr.FluxParameters;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
-import org.hornetq.jms.client.HornetQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +37,7 @@ public class FluxMessageProducer {
     @EJB
     private StartupBean startUpBean;
 
-    private HornetQConnectionFactory connectionFactory = null;
+    private ConnectionFactory connectionFactory = null;
     private Connection connection = null;
     private Queue bridgeQueue = null;
     Session session = null;
@@ -152,19 +151,19 @@ public class FluxMessageProducer {
     private void loadRemoteQueueProperties() throws NamingException, JMSException {
         Properties contextProps = new Properties();
         final FluxParameters fluxParameters = startUpBean.getFluxParameters();
-        contextProps.put(Context.INITIAL_CONTEXT_FACTORY, INITIAL_CONTEXT_FACTORY);
+        contextProps.put(Context.INITIAL_CONTEXT_FACTORY, fluxParameters.getInitialContextFactory());
         contextProps.put(Context.PROVIDER_URL, fluxParameters.getProviderUrl());
         contextProps.put(Context.SECURITY_PRINCIPAL, fluxParameters.getProviderId());
         contextProps.put(Context.SECURITY_CREDENTIALS, fluxParameters.getProviderPwd());
         Context context = new InitialContext(contextProps);
-        connectionFactory = (HornetQConnectionFactory) context.lookup(REMOTE_CONNECTION_FACTORY);
+        connectionFactory = (ConnectionFactory) context.lookup(REMOTE_CONNECTION_FACTORY);
         bridgeQueue = (Queue) context.lookup(JMS_QUEUE_BRIDGE);
     }
 
     private String createStringDate() {
         GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
-        gcal.setTime(new Date(System.currentTimeMillis() + 1000000));
-        XMLGregorianCalendar xgcal = null;
+        gcal.setTime(new Date(System.currentTimeMillis() + 1200000));
+        XMLGregorianCalendar xgcal;
         try {
             xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
             return xgcal.toString();

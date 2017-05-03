@@ -17,12 +17,14 @@ public class FluxParameters {
     private String providerUrl;
     private String providerId;
     private String providerPwd;
+    private String initialContextFactory;
 
 
-    public void populate(String providerUrl, String providerId, String providerPwd){
+    public void populate(String providerUrl, String providerId, String providerPwd, String initialContextFactory){
         this.providerId = providerId;
         this.providerUrl = providerUrl;
         this.providerPwd = providerPwd;
+        this.initialContextFactory = initialContextFactory;
     }
 
     public String getProviderUrl() {
@@ -42,5 +44,11 @@ public class FluxParameters {
     }
     public void setProviderPwd(String providerPwd) {
         this.providerPwd = providerPwd;
+    }
+    public String getInitialContextFactory() {
+        return initialContextFactory;
+    }
+    public void setInitialContextFactory(String initialContextFactory) {
+        this.initialContextFactory = initialContextFactory;
     }
 }
