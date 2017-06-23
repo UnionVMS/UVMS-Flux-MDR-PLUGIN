@@ -1,4 +1,13 @@
-package eu.europa.ec.fisheries.uvms.plugins.mdr;
+/*
+Developed by the European Commission - Directorate General for Maritime Affairs and Fisheries @ European Union, 2015-2016.
+
+This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can redistribute it
+and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of
+the License, or any later version. The IFDM Suite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+details. You should have received a copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
+
+ */package eu.europa.ec.fisheries.uvms.plugins.mdr;
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.CapabilityListType;
@@ -70,7 +79,7 @@ public class StartupBean extends PluginDataHolder {
         serviceType = ServiceMapper.getServiceType(
                 getRegisterClassName(),
                 getApplicaionName(),
-                "A good description for the plugin",
+                "This plugin handles sending and receiving MDR related messages to and from FLUX TL.",
                 PluginType.SATELLITE_RECEIVER,
                 getPluginResponseSubscriptionName());
         register();
@@ -145,15 +154,19 @@ public class StartupBean extends PluginDataHolder {
     public String getPluginResponseSubscriptionName() {
         return getRegisterClassName() + getSetting("application.responseTopicName");
     }
+
     public String getResponseTopicMessageName() {
         return getSetting("application.groupid");
     }
+
     public String getRegisterClassName() {
         return registeredClassName;
     }
+
     public String getApplicaionName() {
         return getSetting("application.name");
     }
+
     public String getSetting(String key) {
         try {
             LOG.debug("Trying to get setting {} ", registeredClassName + "." + key);
@@ -163,6 +176,7 @@ public class StartupBean extends PluginDataHolder {
             return null;
         }
     }
+
     public boolean isWaitingForResponse() {
         return waitingForResponse;
     }

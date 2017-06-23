@@ -3,10 +3,10 @@
     xmlns:mdb="urn:resource-adapter-binding"
     xmlns:security="urn:security">
  
-    <!--jee:assembly-descriptor>
+    <jee:assembly-descriptor>
         <mdb:resource-adapter-binding>
             <jee:ejb-name>FluxMdrRemoteMessageConsumer</jee:ejb-name>
             <mdb:resource-adapter-name>hornetq-ra.rar</mdb:resource-adapter-name>
         </mdb:resource-adapter-binding>
-    </jee:assembly-descriptor -->
+    </jee:assembly-descriptor>
 </jboss>

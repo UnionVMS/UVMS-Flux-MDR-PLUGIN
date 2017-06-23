@@ -1,8 +1,17 @@
+/*
+Developed by the European Commission - Directorate General for Maritime Affairs and Fisheries @ European Union, 2015-2016.
+
+This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can redistribute it
+and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of
+the License, or any later version. The IFDM Suite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+details. You should have received a copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
+
+ */
 package eu.europa.ec.fisheries.uvms.plugins.mdr.producer;
 
 import eu.europa.ec.fisheries.uvms.plugins.mdr.FluxParameters;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants;
 import org.hornetq.jms.client.HornetQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,17 +20,16 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.jms.*;
+import javax.jms.Queue;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
+
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.*;
 
 @Stateless
 @LocalBean
@@ -30,10 +38,10 @@ public class FluxMessageProducer {
     @EJB
     private StartupBean startUpBean;
 
-    private Queue bridgeQueue                          = null;
     private HornetQConnectionFactory connectionFactory = null;
-    private Connection connection                      = null;
-    private Random randomGenerator                     = new Random();
+    private Connection connection = null;
+    private Queue bridgeQueue = null;
+    Session session = null;
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginMessageProducer.class);
 
@@ -42,17 +50,16 @@ public class FluxMessageProducer {
      *
      * @param textMessage
      */
-    public void sendMessageToFluxBridge(String textMessage){
+    public void sendMessageToFluxBridge(String textMessage) {
         try {
-            Session session           = getNewSession();
+            openRemoteConnection();
             TextMessage fluxMsgToSend = prepareMessage(textMessage, session);
-            LOG.debug("-- Sending a message -to flux XEU Node- with ID : " + fluxMsgToSend.getStringProperty("BUSINESS_UUID"));
-            getProducer(session, bridgeQueue).send(fluxMsgToSend);
-            LOG.debug("-- Message sent succesfully.. OK..");
-        } catch(Exception ex){
-            LOG.error("Error while trying to send message to FLUX node.",ex);
+            getProducer(bridgeQueue).send(fluxMsgToSend);
+            LOG.error(">>> Message sent correctly to FLUX node. ID : [[ " + fluxMsgToSend.getJMSMessageID() + " ]]");
+        } catch (Exception ex) {
+            LOG.error("Error while trying to send message to FLUX node.", ex);
         } finally {
-            disconnectQueue();
+            closeConnection();
         }
     }
 
@@ -62,37 +69,51 @@ public class FluxMessageProducer {
      * @return Session
      * @throws JMSException
      */
-    private Session getNewSession() throws JMSException {
+    private void openRemoteConnection() throws JMSException {
         try {
             loadRemoteQueueProperties();
         } catch (NamingException ex) {
             LOG.error("Error when open connection to JMS broker", ex);
             throw new JMSException(ex.getMessage());
         }
-        if (connection == null) {
-            LOG.debug("Opening connection to JMS broker");
-            try {
-                final FluxParameters fluxParameters = startUpBean.getFluxParameters();
-                connection = connectionFactory.createConnection(fluxParameters.getProviderId(), fluxParameters.getProviderPwd());
-                connection.start();
-                return connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            } catch (JMSException ex) {
-                LOG.error("Error when open connection to JMS broker", ex);
-                throw ex;
-            }
+        LOG.debug("Opening connection to JMS broker");
+        try {
+            final FluxParameters fluxParameters = startUpBean.getFluxParameters();
+            connection = connectionFactory.createConnection(fluxParameters.getProviderId(), fluxParameters.getProviderPwd());
+            connection.start();
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        } catch (JMSException ex) {
+            LOG.error("Error when open connection to JMS broker. Going to << RETRY >> now.", ex);
+            retryConnecting();
         }
-        return connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+    }
+
+    /**
+     * Retry connecting to FLUX TL.
+     *
+     * @throws JMSException
+     */
+    private void retryConnecting() throws JMSException {
+        LOG.debug("ReTrying to open connection to Flux TL.");
+        try {
+            final FluxParameters fluxParameters = startUpBean.getFluxParameters();
+            connection = connectionFactory.createConnection(fluxParameters.getProviderId(), fluxParameters.getProviderPwd());
+            connection.start();
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        } catch (JMSException ex) {
+            LOG.error("Error when retrying to open connection to Flux TL. Going to << FAIL >> now.", ex);
+            throw ex;
+        }
     }
 
     /**
      * Creates a MessageProducer for the given destination;
      *
-     * @param session
      * @param destination
      * @return MessageProducer
      * @throws JMSException
      */
-    private MessageProducer getProducer(Session session, Destination destination) throws JMSException {
+    private MessageProducer getProducer(Destination destination) throws JMSException {
         MessageProducer producer = session.createProducer(destination);
         producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
         producer.setTimeToLive(60000L);
@@ -100,23 +121,25 @@ public class FluxMessageProducer {
     }
 
     /**
-     * Prepare the message for sending and set minimal set of attributes, required by FLUX TL JMS;
+     * Prepare the message for sending and set minimal set of attributes, required by FLUX TL JMS
+     * to understand how it should process it;
      *
      * @param textMessage
      * @return fluxMsg
-     *
      * @throws JMSException
      * @throws DatatypeConfigurationException
      */
     private TextMessage prepareMessage(String textMessage, Session session) throws JMSException {
         TextMessage fluxMsg = session.createTextMessage();
         fluxMsg.setText(textMessage);
-        fluxMsg.setStringProperty(FluxConnectionConstants.CONNECTOR_ID,  FluxConnectionConstants.CONNECTOR_ID_VAL);
-        fluxMsg.setStringProperty(FluxConnectionConstants.FLUX_ENV_AD,   FluxConnectionConstants.FLUX_ENV_AD_VAL);
-        fluxMsg.setIntProperty(FluxConnectionConstants.FLUX_ENV_TO,      FluxConnectionConstants.FLUX_ENV_TO_VAL);
-        fluxMsg.setStringProperty(FluxConnectionConstants.FLUX_ENV_DF,   FluxConnectionConstants.FLUX_ENV_DF_VAL);
-        fluxMsg.setStringProperty(FluxConnectionConstants.BUSINESS_UUID, createBusinessUUID());
-        fluxMsg.setStringProperty(FluxConnectionConstants.FLUX_ENV_TODT, createStringDate());
+        fluxMsg.setStringProperty(CONNECTOR_ID, CONNECTOR_ID_VAL);
+        fluxMsg.setStringProperty(FLUX_ENV_AD, FLUX_ENV_AD_VAL);
+        //fluxMsg.setStringProperty(FLUX_ENV_TO, FLUX_ENV_TO_VAL);
+        fluxMsg.setStringProperty(FLUX_ENV_DF, FLUX_ENV_DF_VAL);
+        fluxMsg.setStringProperty(BUSINESS_UUID, createBusinessUUID());
+        fluxMsg.setStringProperty(FLUX_ENV_TODT, createStringDate());
+        fluxMsg.setStringProperty(FLUX_ENV_AR, FLUX_ENV_AR_VAL);
+        printMessageProperties(fluxMsg);
         return fluxMsg;
     }
 
@@ -127,15 +150,15 @@ public class FluxMessageProducer {
      * @throws JMSException
      */
     private void loadRemoteQueueProperties() throws NamingException, JMSException {
-        Properties contextProps = new Properties ();
+        Properties contextProps = new Properties();
         final FluxParameters fluxParameters = startUpBean.getFluxParameters();
-        contextProps.put(Context.INITIAL_CONTEXT_FACTORY, FluxConnectionConstants.INITIAL_CONTEXT_FACTORY);
-        contextProps.put(Context.PROVIDER_URL,            fluxParameters.getProviderUrl());
-        contextProps.put(Context.SECURITY_PRINCIPAL,      fluxParameters.getProviderId());
-        contextProps.put(Context.SECURITY_CREDENTIALS,    fluxParameters.getProviderPwd());
-        Context context   = new InitialContext(contextProps);
-        connectionFactory = (HornetQConnectionFactory) context.lookup(FluxConnectionConstants.REMOTE_CONNECTION_FACTORY);
-        bridgeQueue       = (Queue) context.lookup(FluxConnectionConstants.JMS_QUEUE_BRIDGE);
+        contextProps.put(Context.INITIAL_CONTEXT_FACTORY, INITIAL_CONTEXT_FACTORY);
+        contextProps.put(Context.PROVIDER_URL, fluxParameters.getProviderUrl());
+        contextProps.put(Context.SECURITY_PRINCIPAL, fluxParameters.getProviderId());
+        contextProps.put(Context.SECURITY_CREDENTIALS, fluxParameters.getProviderPwd());
+        Context context = new InitialContext(contextProps);
+        connectionFactory = (HornetQConnectionFactory) context.lookup(REMOTE_CONNECTION_FACTORY);
+        bridgeQueue = (Queue) context.lookup(JMS_QUEUE_BRIDGE);
     }
 
     private String createStringDate() {
@@ -146,33 +169,50 @@ public class FluxMessageProducer {
             xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
             return xgcal.toString();
         } catch (DatatypeConfigurationException | NullPointerException e) {
-            LOG.error("Error occured while creating newXMLGregorianCalendar",e);
+            LOG.error("Error occured while creating newXMLGregorianCalendar", e);
             return null;
         }
     }
 
     /**
-     *  BUSINESS_UUID has a prefix, a date-time combination and a serial - thus it is semi unique
-     * @return String
+     * BUSINESS_UUID has a prefix, a date-time combination and a serial - thus it is semi unique
+     *
+     * @return randomUUID
      */
-    private String createBusinessUUID(){
-        // Prepare unique Business Process ID
-        Date curDate = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("ddHHmmss");
-        return FluxConnectionConstants.BUSINESS_PROCEDURE_PREFIX + format.format(curDate) + String.format("%02d", randomGenerator.nextInt(100));
+    private String createBusinessUUID() {
+        return UUID.randomUUID().toString();
     }
 
     /**
-     * Disconnects from the queue this Producer is connected to.
-     *
+     * Closes a JMS connection;
+     * Disconnects from the actual connection if it is still active;
      */
-    private void disconnectQueue() {
+    protected void closeConnection() {
         try {
-            connection.stop();
-            connection.close();
-            LOG.debug("Succesfully disconnected from FLUX BRIDGE Remote queue.");
-        } catch (JMSException | NullPointerException e) {
+            if (session != null) {
+                System.out.println("\n\nClosing session.");
+                session.close();
+            }
+            if (connection != null) {
+                System.out.println("Succesfully closed the connection and/or session.");
+                connection.stop();
+                connection.close();
+            }
+            LOG.info("Succesfully disconnected from FLUX BRIDGE Remote queue.");
+        } catch (JMSException e) {
             LOG.error("[ Error when stopping or closing JMS queue ] {}", e);
+        }
+    }
+
+    private void printMessageProperties(TextMessage fluxMsg) throws JMSException {
+        LOG.info("Prepared message with the following properties  : \n\n");
+        int i = 0;
+        Enumeration propertyNames = fluxMsg.getPropertyNames();
+        String propName;
+        while (propertyNames.hasMoreElements()) {
+            i++;
+            propName = (String) propertyNames.nextElement();
+            System.out.println(i + ". " + propName + " : " + fluxMsg.getStringProperty(propName));
         }
     }
 
