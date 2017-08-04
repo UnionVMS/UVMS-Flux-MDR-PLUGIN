@@ -9,21 +9,43 @@ details. You should have received a copy of the GNU General Public License along
 
  */package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.BUSINESS_UUID;
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.CONNECTOR_ID;
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.CONNECTOR_ID_VAL;
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_AD;
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_AD_VAL;
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_AR;
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_AR_VAL;
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_DF;
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_DF_VAL;
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_TODT;
+
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.PluginBaseRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
 import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
+import eu.europa.ec.fisheries.uvms.message.MessageException;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.MdrPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.FluxMessageProducer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.*;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.FluxBridgeProducer;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.EJB;
+import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import lombok.extern.slf4j.Slf4j;
 
 @MessageDriven(mappedName = ExchangeModelConstants.PLUGIN_EVENTBUS, activationConfig = {
         @ActivationConfigProperty(propertyName = "messagingType",          propertyValue = ExchangeModelConstants.CONNECTION_TYPE),
@@ -34,21 +56,31 @@ import javax.jms.TextMessage;
         @ActivationConfigProperty(propertyName = "clientId",               propertyValue = MdrPluginConstants.CLIENT_ID_EV),
         @ActivationConfigProperty(propertyName = "messageSelector",        propertyValue = MdrPluginConstants.MESSAGE_SELECTOR_EV)
 })
+@Slf4j
 public class PluginNameEventBusListener implements MessageListener {
-
-    final static Logger LOG = LoggerFactory.getLogger(PluginNameEventBusListener.class);
 
     @EJB
     StartupBean startup;
 
     @EJB
-    FluxMessageProducer fluxMsgProducer;
+    FluxBridgeProducer bridgeProducer;
+
+
+    private static final Map<String, String> fluxMdrMessageProperties = new HashMap<String, String>(){{
+        put(CONNECTOR_ID, CONNECTOR_ID_VAL);
+        put(FLUX_ENV_AD, FLUX_ENV_AD_VAL);
+        //put(FLUX_ENV_TO, FLUX_ENV_TO_VAL);
+        put(FLUX_ENV_DF, FLUX_ENV_DF_VAL);
+        put(BUSINESS_UUID, createBusinessUUID());
+        put(FLUX_ENV_TODT, createStringDate());
+        put(FLUX_ENV_AR, FLUX_ENV_AR_VAL);
+    }};
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
 
-        LOG.debug("Eventbus listener for mdr (MessageConstants.PLUGIN_SERVICE_CLASS_NAME): {}", startup.getRegisterClassName());
+        log.debug("Eventbus listener for mdr (MessageConstants.PLUGIN_SERVICE_CLASS_NAME): {}", startup.getRegisterClassName());
         TextMessage textMessage = (TextMessage) inMessage;
         String strRequest = null;
         try {
@@ -56,22 +88,62 @@ public class PluginNameEventBusListener implements MessageListener {
             switch (request.getMethod()) {
                 case SET_MDR_REQUEST:
                     SetMdrPluginRequest fluxMdrRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SetMdrPluginRequest.class);
-                    LOG.info("\n\nGot Request in MDR PLUGIN : " + fluxMdrRequest.getRequest());
+                    log.info("\n\nGot Request in MDR PLUGIN : " + fluxMdrRequest.getRequest());
                     strRequest = fluxMdrRequest.getRequest();
                     break;
                 default:
-                    LOG.error("Not supported method : " + " Class : " + request.getClass() + ". Method : " + request.getMethod());
+                    log.error("Not supported method : " + " Class : " + request.getClass() + ". Method : " + request.getMethod());
                     break;
             }
         } catch (ExchangeModelMarshallException | NullPointerException e) {
-            LOG.error("[ Error when receiving message in mdr plugin" + startup.getRegisterClassName() + " ]", e);
+            log.error("[ Error when receiving message in mdr plugin" + startup.getRegisterClassName() + " ]", e);
         }
 
         if (strRequest != null) {
-            fluxMsgProducer.sendMessageToFluxBridge(strRequest);
+            try {
+                bridgeProducer.sendModuleMessage(strRequest, null, fluxMdrMessageProperties);
+            } catch (MessageException e) {
+                log.error("Error while trying to send message to bridge queue : ", e);
+            }
         } else {
-            LOG.warn("-->>> The request to be sent to Bridge cannot be empty! Not sending anything..");
+            log.warn("-->>> The request to be sent to Bridge cannot be empty! Not sending anything..");
         }
     }
+
+
+    private static String createStringDate() {
+        GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
+        gcal.setTime(new Date(System.currentTimeMillis() + 1200000));
+        XMLGregorianCalendar xgcal;
+        try {
+            xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+            return xgcal.toString();
+        } catch (DatatypeConfigurationException | NullPointerException e) {
+            log.error("Error occured while creating newXMLGregorianCalendar", e);
+            return null;
+        }
+    }
+
+    /**
+     * BUSINESS_UUID has a prefix, a date-time combination and a serial - thus it is semi unique
+     *
+     * @return randomUUID
+     */
+    private static String createBusinessUUID() {
+        return UUID.randomUUID().toString();
+    }
+
+/*
+    private void printMessageProperties(TextMessage fluxMsg) throws JMSException {
+        log.info("Prepared message with the following properties  : \n\n");
+        int i = 0;
+        Enumeration propertyNames = fluxMsg.getPropertyNames();
+        String propName;
+        while (propertyNames.hasMoreElements()) {
+            i++;
+            propName = (String) propertyNames.nextElement();
+            log.info(i + ". " + propName + " : " + fluxMsg.getStringProperty(propName));
+        }
+    }*/
 
 }

@@ -19,16 +19,18 @@ import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMa
 import eu.europa.ec.fisheries.uvms.plugins.mdr.mapper.ServiceMapper;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.PluginMessageProducer;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.service.FileHandlerBean;
+import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.ejb.DependsOn;
+import javax.ejb.EJB;
+import javax.ejb.Schedule;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.jms.JMSException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.ejb.*;
-import javax.jms.JMSException;
-import java.util.Map;
-import java.util.Properties;
 
 @Singleton
 @Startup
@@ -57,8 +59,6 @@ public class StartupBean extends PluginDataHolder {
     private SettingListType settingList;
     private ServiceType serviceType;
 
-    private FluxParameters fluxParameters;
-
     @PostConstruct
     public void startup() {
 
@@ -80,7 +80,7 @@ public class StartupBean extends PluginDataHolder {
                 getRegisterClassName(),
                 getApplicaionName(),
                 "This plugin handles sending and receiving MDR related messages to and from FLUX TL.",
-                PluginType.SATELLITE_RECEIVER,
+                PluginType.FLUX,
                 getPluginResponseSubscriptionName());
         register();
 
@@ -89,22 +89,9 @@ public class StartupBean extends PluginDataHolder {
             LOG.debug("Setting: KEY: {} , VALUE: {}", entry.getKey(), entry.getValue());
         }
 
-        populateFluxParameters();
         LOG.info("PLUGIN STARTED");
     }
 
-    /**
-     * Populates the flux connection parameters getting them from the properties file.
-     */
-    private void populateFluxParameters() {
-        fluxParameters = new FluxParameters();
-        Properties plugProps = super.getPluginApplicaitonProperties();
-        fluxParameters.populate(
-                (String) plugProps.get("provider.url"),
-                (String) plugProps.get("security.principal.id"),
-                (String) plugProps.get("security.principal.pwd"),
-                (String) plugProps.get("initial.context.factory"));
-    }
 
     @PreDestroy
     public void shutdown() {
@@ -195,8 +182,5 @@ public class StartupBean extends PluginDataHolder {
     }
     public void setIsEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
-    }
-    public FluxParameters getFluxParameters() {
-        return fluxParameters;
     }
 }

@@ -19,11 +19,6 @@
         <application.version>${project.parent.version}</application.version>
         <application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
         <application.error.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}-error.log</application.error.logfile>
-
-        <provider.url>http-remoting://10.155.0.10:8180</provider.url>
-        <security.principal.id>fluxq</security.principal.id>
-        <security.principal.pwd>testpassword</security.principal.pwd>
-        <initial.context.factory>org.jboss.naming.remote.client.InitialContextFactory</initial.context.factory>
     </properties>
 
     <dependencies>
@@ -60,6 +55,12 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms</groupId>
+            <artifactId>uvms-commons</artifactId>
+        </dependency>
+
     </dependencies>
     
     <build>
