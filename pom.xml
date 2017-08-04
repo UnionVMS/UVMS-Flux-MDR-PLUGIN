@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
     <artifactId>mdr-plugin</artifactId>
-    <version>0.5.7-SNAPSHOT</version>
+    <version>0.5.8-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>Plugin for MDR related communication with FLUX</description>
 
@@ -26,13 +25,15 @@
         <logback.version>1.1.2</logback.version>
         <logback.core.version>1.1.2</logback.core.version>
         <audit.model.version>1.0.3</audit.model.version>
-        <exchange.model.version>2.0.8</exchange.model.version>
+        <exchange.model.version>3.0.5</exchange.model.version>
         <commons.lang.version>2.6</commons.lang.version>
         <uvms.commons.version>2.0.22-SNAPSHOT</uvms.commons.version>
         <wildfly.jms.client.version>8.2.0.Final</wildfly.jms.client.version>
         <jboss.connector.api.version>RELEASE</jboss.connector.api.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
+
+		<scm.connection>scm:git:https://github.com/UnionVMS/UVMS-MDR-PLUGIN.git</scm.connection>
     </properties>
 
     <dependencyManagement>
@@ -81,6 +82,7 @@
                 <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
                 <artifactId>exchange-model</artifactId>
                 <version>${exchange.model.version}</version>
+				<classifier>date</classifier>
             </dependency>
             <dependency>
                 <groupId>org.wildfly</groupId>
@@ -109,28 +111,45 @@
 
     </dependencyManagement>
 
-    <distributionManagement>
+	<distributionManagement>
         <repository>
-            <id>digit-releases</id>
-            <name>DG DIGIT Repository</name>
-            <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare/</url>
+            <id>focus-releases</id>
+            <name>UnionVms Repository</name>
+            <url>http://nexus.focus.fish/nexus/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
-            <id>digit-snapshots</id>
-            <name>DG DIGIT Snapshot Repository</name>
-            <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare-snapshots/</url>
+            <id>focus-snapshots</id>
+            <name>UnionVms Snapshot Repository</name>
+            <url>http://nexus.focus.fish/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-mdr-plugin.git
-        </connection>
-        <developerConnection>
-            scm:git:https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-mdr-plugin.git
-        </developerConnection>
-        <url>https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/</url>
+        <connection>${scm.connection}</connection>
         <tag>HEAD</tag>
     </scm>
+
+	<profiles>
+		<profile>
+            <id>dg-mare</id>
+            <distributionManagement>
+                <repository>
+                    <id>digit-releases</id>
+                    <name>DG DIGIT Repository</name>
+                    <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>digit-snapshots</id>
+                    <name>DG DIGIT Snapshot Repository</name>
+                    <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare-snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
+
+            <properties>
+                <scm.connection>scm:git:https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-mdr-plugin.git</scm.connection>
+            </properties>
+        </profile>
+    </profiles>
 
     <build>
         <pluginManagement>
@@ -168,17 +187,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <version>${maven.release.plugin.version}</version>
-                <dependencies>
+               <dependencies>
                     <dependency>
-                        <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
-                        <artifactId>maven-scm-provider-svnjava</artifactId>
-                        <version>${maven.scm.provider.version}</version>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-provider-gitexe</artifactId>
+                        <version>1.8.1</version>
                     </dependency>
                 </dependencies>
-                <configuration>
-                    <tagNameFormat>${project.artifactId}-${project.version}</tagNameFormat>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
