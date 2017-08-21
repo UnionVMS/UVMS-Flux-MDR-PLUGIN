@@ -14,17 +14,19 @@ public class FluxConnectionConstants {
 
     private FluxConnectionConstants(){}
 
+    public static final String CONNECTION_TYPE = "javax.jms.MessageListener";
+
     public static final String DESTINATION_TYPE_QUEUE                = "javax.jms.Queue";
-    public static final String FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE      = "java:/jms/queue/mdr2out";
-    public static final String FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME = "mdr2out";
-    public static final String FLUX_CONNECTION_FACTORY               = "java:/FluxFactory";
+    public static final String FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME = "UVMSMdrPluginEvent";
+
+    public static final String FLUX_MDR_REMOTE_MESSAGE_OUT_QUEUE_NAME = "UVMSMdrPlugin";
 
 	// ConnectionFactory details
-    public static final String REMOTE_CONNECTION_FACTORY = "java:/jms/RemoteConnectionFactory";
+    public static final String REMOTE_CONNECTION_FACTORY = "/jms/RemoteConnectionFactory";
     public static final String INITIAL_CONTEXT_FACTORY   = "org.jboss.naming.remote.client.InitialContextFactory";
 
     // Queue details
-    public static final String JMS_QUEUE_BRIDGE = "java:/jms/queue/bridge";
+    public static final String JMS_QUEUE_BRIDGE = "jms/queue/UVMSPluginBridge";
 
     // Message details
     public static final int NUMBER_OF_MESSAGES  = 10;

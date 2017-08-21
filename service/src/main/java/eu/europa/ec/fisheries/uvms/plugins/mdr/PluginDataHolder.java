@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  *
- * @author jojoha
+ * @author ankovi
  */
 public abstract class PluginDataHolder {
 

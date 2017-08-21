@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  *
- * @author jojoha
+ * @author kovian
  */
 public class ServiceMapper {
 
@@ -31,6 +31,8 @@ public class ServiceMapper {
     private ServiceMapper(){
         super();
     }
+
+
     public static ServiceType getServiceType(String serviceClassName, String mdrDisplayName, String description, PluginType mdrType, String responseMessageName) {
 
         if (responseMessageName == null) {

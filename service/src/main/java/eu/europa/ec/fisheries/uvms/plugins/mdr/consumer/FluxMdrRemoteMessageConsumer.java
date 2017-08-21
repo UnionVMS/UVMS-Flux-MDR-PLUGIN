@@ -25,10 +25,10 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 import java.io.StringWriter;
 
-@MessageDriven(mappedName = FluxConnectionConstants.FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME,  activationConfig = {
+@MessageDriven(mappedName = FluxConnectionConstants.FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME, activationConfig = {
+		@ActivationConfigProperty(propertyName = "messagingType", propertyValue = FluxConnectionConstants.CONNECTION_TYPE),
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = FluxConnectionConstants.DESTINATION_TYPE_QUEUE),
-		@ActivationConfigProperty(propertyName = "destination", propertyValue = FluxConnectionConstants.FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE),
-		@ActivationConfigProperty(propertyName = "connectionFactoryLookup", propertyValue = FluxConnectionConstants.FLUX_CONNECTION_FACTORY)
+		@ActivationConfigProperty(propertyName = "destination", propertyValue = FluxConnectionConstants.FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME)
 })
 public class FluxMdrRemoteMessageConsumer implements MessageListener {
 
