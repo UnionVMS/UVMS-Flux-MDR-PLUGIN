@@ -11,36 +11,59 @@ details. You should have received a copy of the GNU General Public License along
 package eu.europa.ec.fisheries.uvms.plugins.mdr.producer;
 
 import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
+import eu.europa.ec.fisheries.uvms.message.JMSUtils;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.ModuleQueue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Resource;
+import javax.annotation.PostConstruct;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.jms.*;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.jms.Topic;
+import javax.naming.InitialContext;
 import javax.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 @LocalBean
 @Transactional
 public class PluginMessageProducer {
 
-    @Resource(mappedName = ExchangeModelConstants.EXCHANGE_MESSAGE_IN_QUEUE)
     private Queue exchangeQueue;
-
-    @Resource(mappedName = ExchangeModelConstants.PLUGIN_EVENTBUS)
     private Topic eventBus;
-
-    @Resource(lookup = ExchangeModelConstants.CONNECTION_FACTORY)
     private ConnectionFactory connectionFactory;
 
     private Connection connection = null;
     private Session session = null;
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginMessageProducer.class);
+
+    @PostConstruct
+    public void resourceLookup() {
+        LOG.debug("Open connection to JMS broker");
+        InitialContext ctx;
+        try {
+            ctx = new InitialContext();
+        } catch (Exception e) {
+            LOG.error("Failed to get InitialContext",e);
+            throw new RuntimeException(e);
+        }
+        connectionFactory = JMSUtils.lookupConnectionFactory();
+        try {
+            connection = connectionFactory.createConnection();
+            connection.start();
+        } catch (JMSException ex) {
+            LOG.error("Error when open connection to JMS broker");
+        }
+        exchangeQueue = JMSUtils.lookupQueue(ctx, ExchangeModelConstants.EXCHANGE_MESSAGE_IN_QUEUE);
+        eventBus = JMSUtils.lookupTopic(ctx, ExchangeModelConstants.PLUGIN_EVENTBUS);
+    }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendResponseMessage(String text, TextMessage requestMessage) throws JMSException {

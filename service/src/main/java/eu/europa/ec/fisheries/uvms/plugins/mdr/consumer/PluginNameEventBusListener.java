@@ -66,16 +66,6 @@ public class PluginNameEventBusListener implements MessageListener {
     FluxBridgeProducer bridgeProducer;
 
 
-    private static final Map<String, String> fluxMdrMessageProperties = new HashMap<String, String>(){{
-        put(CONNECTOR_ID, CONNECTOR_ID_VAL);
-        put(FLUX_ENV_AD, FLUX_ENV_AD_VAL);
-        //put(FLUX_ENV_TO, FLUX_ENV_TO_VAL);
-        put(FLUX_ENV_DF, FLUX_ENV_DF_VAL);
-        put(BUSINESS_UUID, createBusinessUUID());
-        put(FLUX_ENV_TODT, createStringDate());
-        put(FLUX_ENV_AR, FLUX_ENV_AR_VAL);
-    }};
-
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
@@ -101,7 +91,7 @@ public class PluginNameEventBusListener implements MessageListener {
 
         if (strRequest != null) {
             try {
-                bridgeProducer.sendModuleMessage(strRequest, null, fluxMdrMessageProperties);
+                bridgeProducer.sendModuleMessage(strRequest, null, createMessagePropertiesMap());
             } catch (MessageException e) {
                 log.error("Error while trying to send message to bridge queue : ", e);
             }
@@ -110,10 +100,22 @@ public class PluginNameEventBusListener implements MessageListener {
         }
     }
 
+    private Map<String, String> createMessagePropertiesMap() {
+        return new HashMap<String, String>(){{
+            put(CONNECTOR_ID, CONNECTOR_ID_VAL);
+            put(FLUX_ENV_AD, FLUX_ENV_AD_VAL);
+            //put(FLUX_ENV_TO, FLUX_ENV_TO_VAL);
+            put(FLUX_ENV_DF, FLUX_ENV_DF_VAL);
+            put(BUSINESS_UUID, createBusinessUUID());
+            put(FLUX_ENV_TODT, createStringDate());
+            put(FLUX_ENV_AR, FLUX_ENV_AR_VAL);
+        }};
+    }
 
-    private static String createStringDate() {
+
+    private String createStringDate() {
         GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
-        gcal.setTime(new Date(System.currentTimeMillis() + 1200000));
+        gcal.setTime(new Date(System.currentTimeMillis() + 1200000 + 72000000));
         XMLGregorianCalendar xgcal;
         try {
             xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
@@ -129,13 +131,12 @@ public class PluginNameEventBusListener implements MessageListener {
      *
      * @return randomUUID
      */
-    private static String createBusinessUUID() {
+    private String createBusinessUUID() {
         return UUID.randomUUID().toString();
     }
 
-/*
-    private void printMessageProperties(TextMessage fluxMsg) throws JMSException {
-        log.info("Prepared message with the following properties  : \n\n");
+/*    private void printMessageProperties(TextMessage fluxMsg) throws JMSException {
+        log.info("Prepared message (For Flux TL) with the following properties  : \n\n");
         int i = 0;
         Enumeration propertyNames = fluxMsg.getPropertyNames();
         String propName;
@@ -143,7 +144,6 @@ public class PluginNameEventBusListener implements MessageListener {
             i++;
             propName = (String) propertyNames.nextElement();
             log.info(i + ". " + propName + " : " + fluxMsg.getStringProperty(propName));
-        }
-    }*/
+        }*/
 
 }
