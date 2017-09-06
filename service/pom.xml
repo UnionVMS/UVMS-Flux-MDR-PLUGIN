@@ -37,12 +37,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.wildfly</groupId>
-            <artifactId>wildfly-jms-client-bom</artifactId>
-            <type>pom</type>
-        </dependency>
-
-        <dependency>
             <groupId>org.jboss.spec.javax.resource</groupId>
             <artifactId>jboss-connector-api_1.6_spec</artifactId>
         </dependency>
