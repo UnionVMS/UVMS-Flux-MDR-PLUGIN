@@ -9,6 +9,7 @@ details. You should have received a copy of the GNU General Public License along
 
  */package eu.europa.ec.fisheries.uvms.plugins.mdr;
 
+import eu.europa.ec.fisheries.uvms.plugins.mdr.consumer.PluginNameEventBusListener;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -43,5 +44,10 @@ public class AppTest
     public void testApp()
     {
         assertTrue( true );
+    }
+
+    @org.junit.Test
+    public void DateTest(){
+        PluginNameEventBusListener list = new PluginNameEventBusListener();
     }
 }

@@ -27,8 +27,7 @@
         <audit.model.version>1.0.3</audit.model.version>
         <exchange.model.version>3.0.5</exchange.model.version>
         <commons.lang.version>2.6</commons.lang.version>
-        <uvms.commons.version>2.0.26-SNAPSHOT</uvms.commons.version>
-        <wildfly.jms.client.version>8.2.0.Final</wildfly.jms.client.version>
+        <uvms.commons.version>2.0.28-SNAPSHOT</uvms.commons.version>
         <jboss.connector.api.version>RELEASE</jboss.connector.api.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
@@ -83,12 +82,6 @@
                 <artifactId>exchange-model</artifactId>
                 <version>${exchange.model.version}</version>
 				<classifier>date</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.wildfly</groupId>
-                <artifactId>wildfly-jms-client-bom</artifactId>
-                <version>${wildfly.jms.client.version}</version>
-                <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>org.jboss.spec.javax.resource</groupId>

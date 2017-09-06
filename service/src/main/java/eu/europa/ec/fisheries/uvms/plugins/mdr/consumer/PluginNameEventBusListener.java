@@ -18,7 +18,9 @@ import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionCo
 import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_AR_VAL;
 import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_DF;
 import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_DF_VAL;
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_TO;
 import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_TODT;
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_TO_VAL;
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.PluginBaseRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
@@ -46,6 +48,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
 
 @MessageDriven(mappedName = ExchangeModelConstants.PLUGIN_EVENTBUS, activationConfig = {
         @ActivationConfigProperty(propertyName = "messagingType",          propertyValue = ExchangeModelConstants.CONNECTION_TYPE),
@@ -104,7 +107,7 @@ public class PluginNameEventBusListener implements MessageListener {
         return new HashMap<String, String>(){{
             put(CONNECTOR_ID, CONNECTOR_ID_VAL);
             put(FLUX_ENV_AD, FLUX_ENV_AD_VAL);
-            //put(FLUX_ENV_TO, FLUX_ENV_TO_VAL);
+            put(FLUX_ENV_TO, FLUX_ENV_TO_VAL);
             put(FLUX_ENV_DF, FLUX_ENV_DF_VAL);
             put(BUSINESS_UUID, createBusinessUUID());
             put(FLUX_ENV_TODT, createStringDate());
@@ -115,7 +118,8 @@ public class PluginNameEventBusListener implements MessageListener {
 
     private String createStringDate() {
         GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
-        gcal.setTime(new Date(System.currentTimeMillis() + 1200000 + 72000000));
+        Date newDate = DateUtils.addHours(new Date(), 3);
+        gcal.setTime(newDate);
         XMLGregorianCalendar xgcal;
         try {
             xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
