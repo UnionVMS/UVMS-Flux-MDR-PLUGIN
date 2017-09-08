@@ -26,52 +26,51 @@ import javax.jms.TextMessage;
 import java.io.StringWriter;
 
 @MessageDriven(mappedName = FluxConnectionConstants.FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME, activationConfig = {
-		@ActivationConfigProperty(propertyName = "messagingType", propertyValue = FluxConnectionConstants.CONNECTION_TYPE),
-		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = FluxConnectionConstants.DESTINATION_TYPE_QUEUE),
-		@ActivationConfigProperty(propertyName = "destination", propertyValue = FluxConnectionConstants.FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME)
+        @ActivationConfigProperty(propertyName = "messagingType", propertyValue = FluxConnectionConstants.CONNECTION_TYPE),
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = FluxConnectionConstants.DESTINATION_TYPE_QUEUE),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = FluxConnectionConstants.FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME)
 })
 public class FluxMdrRemoteMessageConsumer implements MessageListener {
 
-	private static final Logger LOG = LoggerFactory.getLogger(FluxMdrRemoteMessageConsumer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FluxMdrRemoteMessageConsumer.class);
 
-	@EJB
+    @EJB
     ExchangeService exchangeService;
 
-	@Override
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void onMessage(Message inMessage) {
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void onMessage(Message inMessage) {
 
-		LOG.info("\n\n\t>>>>>>>>>>>>>>> Got message (from Flux) in Flux MDR plugin queue <<<<<<<<<<<<<<<<<<<\n\n");
-	    TextMessage textMessage = (TextMessage) inMessage;
-		try {
-			LOG.info("Sending Message [Response from Flux]  to Exchange Module.");
-			if(LOG.isDebugEnabled()){
-				LOG.debug("\nMESSAGE CONTENT : \n\n "+ prettyPrintXml(textMessage.getText()) + "\n\n");
-			}
-			exchangeService.sendFLUXMDRResponseMessageToExchange(textMessage.getText());
-			LOG.info(">>>>>>>>>>>>>>> Message sent successfully back to Exchange Module.");
-		} catch (JMSException e1) {
-			LOG.error("Error while marshalling Flux Response.",e1);
-		}
-	}
+        LOG.info("\n\n\t>>>>>>>>>>>>>>> Got message (from Flux) in Flux MDR plugin queue <<<<<<<<<<<<<<<<<<<\n\n");
+        TextMessage textMessage = (TextMessage) inMessage;
+        try {
+            LOG.info("Sending Message [Response from Flux]  to Exchange Module.");
+            exchangeService.sendFLUXMDRResponseMessageToExchange(textMessage.getText());
+            LOG.info(">>>>>>>>>>>>>>> Message sent successfully back to Exchange Module.");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("\nMESSAGE CONTENT : \n\n " + prettyPrintXml(textMessage.getText()) + "\n\n");
+            }
+        } catch (JMSException e1) {
+            LOG.error("Error while marshalling Flux Response.", e1);
+        }
+    }
 
-	/**
-	 * Pretty Print XML String
-	 *
-	 * @param  xml
-	 * @return formattedXml
-	 */
-	public static String prettyPrintXml(String xml) {
-		StringWriter sw = new StringWriter();
-		try {
-			final OutputFormat format = OutputFormat.createPrettyPrint();
-			final org.dom4j.Document document = DocumentHelper.parseText(xml);
-			final XMLWriter writer = new XMLWriter(sw, format);
-			writer.write(document);
-		}
-		catch (Exception e) {
-			LOG.error("Error pretty printing xml:\n" + xml, e);
-		}
-		return sw.toString();
-	}
+    /**
+     * Pretty Print XML String
+     *
+     * @param xml
+     * @return formattedXml
+     */
+    public static String prettyPrintXml(String xml) {
+        StringWriter sw = new StringWriter();
+        try {
+            final OutputFormat format = OutputFormat.createPrettyPrint();
+            final org.dom4j.Document document = DocumentHelper.parseText(xml);
+            final XMLWriter writer = new XMLWriter(sw, format);
+            writer.write(document);
+        } catch (Exception e) {
+            LOG.error("Error pretty printing xml:\n" + xml, e);
+        }
+        return sw.toString();
+    }
 }
