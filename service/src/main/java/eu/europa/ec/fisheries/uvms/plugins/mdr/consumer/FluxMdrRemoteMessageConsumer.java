@@ -41,17 +41,17 @@ public class FluxMdrRemoteMessageConsumer implements MessageListener {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
 
-        LOG.info("\n\n\t>>>>>>>>>>>>>>> Got message (from Flux) in Flux MDR plugin queue <<<<<<<<<<<<<<<<<<<\n\n");
+        LOG.info("\n\n\t[[NEW MESSAGE]] Got message (from Flux) in Flux MDR plugin queue \n\n");
         TextMessage textMessage = (TextMessage) inMessage;
         try {
-            LOG.info("Sending Message [Response from Flux]  to Exchange Module.");
+            LOG.info("[START] Sending Message [Response from Flux]  to Exchange Module.");
             exchangeService.sendFLUXMDRResponseMessageToExchange(textMessage.getText());
-            LOG.info(">>>>>>>>>>>>>>> Message sent successfully back to Exchange Module.");
+            LOG.info("[END] Message sent successfully back to Exchange Module.");
             if (LOG.isDebugEnabled()) {
                 LOG.debug("\nMESSAGE CONTENT : \n\n " + prettyPrintXml(textMessage.getText()) + "\n\n");
             }
         } catch (JMSException e1) {
-            LOG.error("Error while marshalling Flux Response.", e1);
+            LOG.error("[ERROR] Error while marshalling Flux Response.", e1);
         }
     }
 
@@ -71,6 +71,7 @@ public class FluxMdrRemoteMessageConsumer implements MessageListener {
         } catch (Exception e) {
             LOG.error("Error pretty printing xml:\n" + xml, e);
         }
-        return sw.toString();
+        String formattedStr = sw.toString();
+        return formattedStr.substring(0, formattedStr.length() > 10000 ? 10000 : formattedStr.length()-1) + ".......";
     }
 }
