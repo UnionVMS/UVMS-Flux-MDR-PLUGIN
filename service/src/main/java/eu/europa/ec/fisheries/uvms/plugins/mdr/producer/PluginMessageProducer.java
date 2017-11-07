@@ -21,6 +21,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
+import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
@@ -67,30 +68,37 @@ public class PluginMessageProducer {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendResponseMessage(String text, TextMessage requestMessage) throws JMSException {
+        MessageProducer producer = null;
         try {
             openConnection();
             TextMessage message = session.createTextMessage();
             message.setJMSDestination(requestMessage.getJMSReplyTo());
             message.setJMSCorrelationID(requestMessage.getJMSMessageID());
             message.setText(text);
-            session.createProducer(requestMessage.getJMSReplyTo()).send(message);
+            producer = session.createProducer(requestMessage.getJMSReplyTo());
+            producer.send(message);
         } catch (JMSException e) {
             LOG.error("[ Error when sending jms message. ] {}", e);
             throw new JMSException(e.getMessage());
         } finally {
+            if(producer != null){
+                producer.close();
+            }
             closeConnection();
         }
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, ModuleQueue queue) throws JMSException {
+        MessageProducer producer = null;
         try {
             openConnection();
             TextMessage message = session.createTextMessage();
             message.setText(text);
             switch (queue) {
                 case EXCHANGE:
-                    session.createProducer(exchangeQueue).send(message);
+                    producer = session.createProducer(exchangeQueue);
+                    producer.send(message);
                     break;
                 default:
                     LOG.error("[ Sending Queue is not implemented ]");
@@ -101,23 +109,31 @@ public class PluginMessageProducer {
             LOG.error("[ Error when sending data source message. ] {}", e);
             throw new JMSException(e.getMessage());
         } finally {
+            if(producer != null){
+                producer.close();
+            }
             closeConnection();
         }
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendEventBusMessage(String text, String serviceName) throws JMSException {
+        MessageProducer producer = null;
         try {
             openConnection();
             TextMessage message = session.createTextMessage();
             message.setText(text);
             message.setStringProperty(ExchangeModelConstants.SERVICE_NAME, serviceName);
-            session.createProducer(eventBus).send(message);
+            producer = session.createProducer(eventBus);
+            producer.send(message);
             return message.getJMSMessageID();
         } catch (JMSException e) {
             LOG.error("[ Error when sending message. ] {0}", e);
             throw new JMSException(e.getMessage());
         } finally {
+            if(producer != null){
+                producer.close();
+            }
             closeConnection();
         }
     }
