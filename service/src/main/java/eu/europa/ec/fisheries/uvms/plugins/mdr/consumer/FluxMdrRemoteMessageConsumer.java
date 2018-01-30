@@ -10,29 +10,31 @@ details. You should have received a copy of the GNU General Public License along
  */
 package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
-import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.service.ExchangeService;
-import org.dom4j.DocumentHelper;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.XMLWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.ejb.*;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.service.ExchangeService;
+import java.io.StringWriter;
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.EJB;
+import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-import java.io.StringWriter;
+import lombok.extern.slf4j.Slf4j;
+import org.dom4j.DocumentHelper;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 
-@MessageDriven(mappedName = FluxConnectionConstants.FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME, activationConfig = {
-        @ActivationConfigProperty(propertyName = "messagingType", propertyValue = FluxConnectionConstants.CONNECTION_TYPE),
-        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = FluxConnectionConstants.DESTINATION_TYPE_QUEUE),
-        @ActivationConfigProperty(propertyName = "destination", propertyValue = FluxConnectionConstants.FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME)
+@MessageDriven(mappedName = MessageConstants.FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME, activationConfig = {
+        @ActivationConfigProperty(propertyName = MessageConstants.MESSAGING_TYPE_STR, propertyValue = MessageConstants.CONNECTION_TYPE),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_TYPE_STR, propertyValue = MessageConstants.DESTINATION_TYPE_QUEUE),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_STR, propertyValue = MessageConstants.FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME)
 })
+@Slf4j
 public class FluxMdrRemoteMessageConsumer implements MessageListener {
-
-    private static final Logger LOG = LoggerFactory.getLogger(FluxMdrRemoteMessageConsumer.class);
 
     @EJB
     ExchangeService exchangeService;
@@ -40,18 +42,15 @@ public class FluxMdrRemoteMessageConsumer implements MessageListener {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
-
-        LOG.info("\n\n\t[[NEW MESSAGE]] Got message (from Flux) in Flux MDR plugin queue \n\n");
+        log.info("\n\n\t[[NEW MESSAGE]] Got message (from Flux) in Flux MDR plugin queue! \n\n");
         TextMessage textMessage = (TextMessage) inMessage;
         try {
-            LOG.info("[START] Sending Message [Response from Flux]  to Exchange Module.");
+            log.info("[START] Sending Message to Exchange Module..");
             exchangeService.sendFLUXMDRResponseMessageToExchange(textMessage.getText());
-            LOG.info("[END] Message sent successfully back to Exchange Module.");
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("\nMESSAGE CONTENT : \n\n " + prettyPrintXml(textMessage.getText()) + "\n\n");
-            }
+            log.info("[END] Message sent successfully back to Exchange Module..");
+            log.debug("\nMESSAGE CONTENT : \n\n " + prettyPrintXml(textMessage.getText()) + "\n\n");
         } catch (JMSException e1) {
-            LOG.error("[ERROR] Error while marshalling Flux Response.", e1);
+            log.error("[ERROR] Error while marshalling Flux Response.", e1);
         }
     }
 
@@ -69,7 +68,7 @@ public class FluxMdrRemoteMessageConsumer implements MessageListener {
             final XMLWriter writer = new XMLWriter(sw, format);
             writer.write(document);
         } catch (Exception e) {
-            LOG.error("Error pretty printing xml:\n" + xml, e);
+            log.error("Error pretty printing xml:\n" + xml, e);
         }
         String formattedStr = sw.toString();
         return formattedStr.substring(0, formattedStr.length() > 10000 ? 10000 : formattedStr.length()-1) + ".......";
