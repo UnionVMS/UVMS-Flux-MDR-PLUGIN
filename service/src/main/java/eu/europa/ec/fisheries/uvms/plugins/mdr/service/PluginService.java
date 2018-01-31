@@ -34,7 +34,7 @@ import javax.ejb.Stateless;
 public class PluginService {
 
     @EJB
-    StartupBean startupBean;
+    private StartupBean startupBean;
 
     final static Logger LOG = LoggerFactory.getLogger(PluginService.class);
 
