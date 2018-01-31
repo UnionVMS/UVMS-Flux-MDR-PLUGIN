@@ -34,15 +34,12 @@ public class ServiceMapper {
 
 
     public static ServiceType getServiceType(String serviceClassName, String mdrDisplayName, String description, PluginType mdrType, String responseMessageName) {
-
         if (responseMessageName == null) {
             throw new IllegalArgumentException("Response message must be provided!");
         }
-
         if (serviceClassName == null) {
             throw new IllegalArgumentException("ServiceClassName message must be provided!");
         }
-
         ServiceType serviceType = new ServiceType();
         serviceType.setDescription(description);
         serviceType.setName(mdrDisplayName);

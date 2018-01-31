@@ -10,17 +10,15 @@ details. You should have received a copy of the GNU General Public License along
  */
 package eu.europa.ec.fisheries.uvms.plugins.mdr.service;
 
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.PluginMessageProducer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.PluginToExchangeProducer;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.jms.JMSException;
+import javax.jms.Destination;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * EJB needed for sending messages to Exchange queue
@@ -29,22 +27,21 @@ import javax.jms.JMSException;
  */
 @LocalBean
 @Stateless
+@Slf4j
 public class ExchangeService {
 
-	final static Logger LOG = LoggerFactory.getLogger(ExchangeService.class);
+    @EJB
+    private PluginToExchangeProducer exchangeProducer;
 
-	@EJB
-	PluginMessageProducer producer;
-
-	public void sendFLUXMDRResponseMessageToExchange(String fluxMdrResponseText) {
-		try {
-			String text = ExchangeModuleRequestMapper.createFluxMdrSyncEntityResponse(fluxMdrResponseText, "flux");
-			String messageId = producer.sendModuleMessage(text, ModuleQueue.EXCHANGE);
-			LOG.info("FluxMdrResponse Sent to Exchange module. MessageID :" + messageId);
-		} catch (ExchangeModelMarshallException e) {
-			LOG.error("Couldn't map Mdr Entity to SetFLUXMDRSyncMessageResponse.", e);
-		} catch (JMSException e) {
-			LOG.error("Couldn't send SetFLUXMDRSyncMessageResponse to Exchange module", e);
-		}
-	}
+    public void sendFLUXMDRResponseMessageToExchange(String fluxMdrResponseText) {
+        try {
+            String text = ExchangeModuleRequestMapper.createFluxMdrSyncEntityResponse(fluxMdrResponseText, "flux");
+            String messageId = exchangeProducer.sendModuleMessage(text, (Destination) null);
+            log.info("FluxMdrResponse Sent to Exchange module. MessageID :" + messageId);
+        } catch (ExchangeModelMarshallException e) {
+            log.error("Couldn't map Mdr Entity to SetFLUXMDRSyncMessageResponse.", e);
+        } catch (MessageException e) {
+            log.error("Couldn't send SetFLUXMDRSyncMessageResponse to Exchange module", e);
+        }
+    }
 }

@@ -24,9 +24,9 @@ import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionCo
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.PluginBaseRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
-import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
-import eu.europa.ec.fisheries.uvms.message.MessageException;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.MdrPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.mapper.JAXBMarshaller;
@@ -50,29 +50,27 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
 
-@MessageDriven(mappedName = ExchangeModelConstants.PLUGIN_EVENTBUS, activationConfig = {
-        @ActivationConfigProperty(propertyName = "messagingType",          propertyValue = ExchangeModelConstants.CONNECTION_TYPE),
-        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = MdrPluginConstants.DURABLE),
-        @ActivationConfigProperty(propertyName = "destinationType",        propertyValue = ExchangeModelConstants.DESTINATION_TYPE_TOPIC),
-        @ActivationConfigProperty(propertyName = "destination",            propertyValue = ExchangeModelConstants.EVENTBUS_NAME),
-        @ActivationConfigProperty(propertyName = "subscriptionName",       propertyValue = MdrPluginConstants.SUBSCRIPTION_NAME_EV),
-        @ActivationConfigProperty(propertyName = "clientId",               propertyValue = MdrPluginConstants.CLIENT_ID_EV),
-        @ActivationConfigProperty(propertyName = "messageSelector",        propertyValue = MdrPluginConstants.MESSAGE_SELECTOR_EV)
+@MessageDriven(mappedName = MessageConstants.EVENT_BUS_TOPIC, activationConfig = {
+        @ActivationConfigProperty(propertyName = MessageConstants.MESSAGING_TYPE_STR,          propertyValue = MessageConstants.CONNECTION_TYPE),
+        @ActivationConfigProperty(propertyName = MessageConstants.SUBSCRIPTION_DURABILITY_STR, propertyValue = MessageConstants.DURABLE_CONNECTION),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_TYPE_STR,        propertyValue = MessageConstants.DESTINATION_TYPE_TOPIC),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_STR,            propertyValue = MessageConstants.EVENT_BUS_TOPIC_NAME),
+        @ActivationConfigProperty(propertyName = MessageConstants.SUBSCRIPTION_NAME_STR,       propertyValue = MdrPluginConstants.SUBSCRIPTION_NAME_EV),
+        @ActivationConfigProperty(propertyName = MessageConstants.CLIENT_ID_STR,               propertyValue = MdrPluginConstants.CLIENT_ID_EV),
+        @ActivationConfigProperty(propertyName = MessageConstants.MESSAGE_SELECTOR_STR,        propertyValue = MdrPluginConstants.MESSAGE_SELECTOR_EV)
 })
 @Slf4j
 public class PluginNameEventBusListener implements MessageListener {
 
     @EJB
-    StartupBean startup;
+    private StartupBean startup;
 
     @EJB
-    FluxBridgeProducer bridgeProducer;
-
+    private FluxBridgeProducer bridgeProducer;
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
-
         log.debug("Eventbus listener for mdr (MessageConstants.PLUGIN_SERVICE_CLASS_NAME): {}", startup.getRegisterClassName());
         TextMessage textMessage = (TextMessage) inMessage;
         String strRequest = null;
@@ -94,7 +92,7 @@ public class PluginNameEventBusListener implements MessageListener {
 
         if (strRequest != null) {
             try {
-                bridgeProducer.sendModuleMessage(strRequest, null, createMessagePropertiesMap());
+                bridgeProducer.sendModuleMessageWithProps(strRequest, null, createMessagePropertiesMap());
             } catch (MessageException e) {
                 log.error("Error while trying to send message to bridge queue : ", e);
             }

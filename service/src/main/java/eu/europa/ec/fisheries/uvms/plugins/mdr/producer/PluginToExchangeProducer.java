@@ -14,19 +14,13 @@ import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import lombok.extern.slf4j.Slf4j;
 
-/**
- * Created by kovian on 28/07/2017.
- */
 @Stateless
 @LocalBean
-@Slf4j
-public class FluxBridgeProducer extends AbstractProducer {
+public class PluginToExchangeProducer extends AbstractProducer {
 
     @Override
     public String getDestinationName() {
-        return MessageConstants.QUEUE_PLUGIN_BRIDGE;
+        return MessageConstants.QUEUE_EXCHANGE_EVENT;
     }
-
 }

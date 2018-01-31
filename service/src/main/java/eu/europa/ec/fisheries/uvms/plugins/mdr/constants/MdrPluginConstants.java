@@ -25,6 +25,4 @@ public final class MdrPluginConstants {
 	public static final String SUBSCRIPTION_NAME_AC = MDR_GROUP_ID_ARTIFACT_ID_AC;
 	public static final String MESSAGE_SELECTOR_AC  = "ServiceName='"+MDR_GROUP_ID_ARTIFACT_ID_AC+"'";
 
-    public static final String DURABLE = "Durable";
-
 }
