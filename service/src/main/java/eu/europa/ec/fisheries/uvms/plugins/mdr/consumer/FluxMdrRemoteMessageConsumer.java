@@ -12,7 +12,7 @@ package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.service.ExchangeService;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.service.ExchangePluginServiceBean;
 import java.io.StringWriter;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -37,7 +37,7 @@ import org.dom4j.io.XMLWriter;
 public class FluxMdrRemoteMessageConsumer implements MessageListener {
 
     @EJB
-    ExchangeService exchangeService;
+    ExchangePluginServiceBean exchangeService;
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

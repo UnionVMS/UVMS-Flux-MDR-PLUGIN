@@ -27,10 +27,13 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.OracleMessagePoster;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.MdrPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.FluxBridgeProducer;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.service.ExchangePluginServiceBean;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -48,6 +51,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 @MessageDriven(mappedName = MessageConstants.EVENT_BUS_TOPIC, activationConfig = {
@@ -67,6 +71,12 @@ public class PluginNameEventBusListener implements MessageListener {
 
     @EJB
     private FluxBridgeProducer bridgeProducer;
+
+    @EJB
+    private OracleMessagePoster oracleMsgPoster;
+
+    @EJB
+    private ExchangePluginServiceBean exchangeService;
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -89,15 +99,23 @@ public class PluginNameEventBusListener implements MessageListener {
         } catch (ExchangeModelMarshallException | NullPointerException e) {
             log.error("[ Error when receiving message in mdr plugin" + startup.getRegisterClassName() + " ]", e);
         }
-
-        if (strRequest != null) {
+        if (StringUtils.isNotEmpty(strRequest)) {
             try {
-                bridgeProducer.sendModuleMessageWithProps(strRequest, null, createMessagePropertiesMap());
+                final Map<String, String> msgProps = createMessagePropertiesMap();
+                if(oracleMsgPoster.isActive()){
+                    log.info("[INFO] Going to search for codelist in Oracle DB.");
+                    String response = oracleMsgPoster.postMessageToOracleDb(strRequest, "AHR:VMS", msgProps.get(BUSINESS_UUID));
+                    exchangeService.sendFLUXMDRResponseMessageToExchange(response);
+                } else {
+                    bridgeProducer.sendModuleMessageWithProps(strRequest, null, msgProps);
+                }
             } catch (MessageException e) {
-                log.error("Error while trying to send message to bridge queue : ", e);
+                log.error("[ERROR] Error while trying to send message to bridge queue : ", e);
+            } catch (SQLException e) {
+                log.error("[ERROR] Error while trying to call stored procedure in oracle db : ", e);
             }
         } else {
-            log.warn("-->>> The request to be sent to Bridge cannot be empty! Not sending anything..");
+            log.warn("[WARN] The request to be sent to Bridge cannot be empty! Not sending anything..");
         }
     }
 

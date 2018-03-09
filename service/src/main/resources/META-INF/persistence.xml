@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://java.sun.com/xml/ns/persistence"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+
+<!--    <persistence-unit name="mdrPluginPUpostgres" transaction-type="JTA">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <jta-data-source>java:jboss/datasources/uvms_mdr_plugin</jta-data-source>
+        <properties>
+            <property name="hibernate.dialect" value="${hibernate.spatial.dialect}"/>
+            <property name="hibernate.event.merge.entity_copy_observer" value="allow"/>
+            <property name="hibernate.default_schema" value="mdr_plugin"/>
+            <property name="show_sql" value="false"/>
+            <property name="format_sql" value="true"/>
+            <property name="use_sql_comments" value="false"/>
+            <property name="hibernate.cache.use_second_level_cache" value="true"/>
+            <property name="hibernate.generate_statistics" value="true"/>
+        </properties>
+    </persistence-unit>-->
+
+    <persistence-unit name="mdrPluginPUOracle" transaction-type="JTA">
+        	<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+            <jta-data-source>java:/jdbc/uvms_mdm_oracle</jta-data-source>
+            <properties>
+                <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect" />
+                <property name="hibernate.query.substitutions" value="true 1, false 0" />
+                <property name="hibernate.hbm2ddl.auto" value="none"/>
+                <property name="show_sql" value="false"/>
+                <property name="format_sql" value="true"/>
+                <property name="use_sql_comments" value="false"/>
+                <property name="hibernate.cache.use_second_level_cache" value="true"/>
+            </properties>
+    </persistence-unit>
+
+</persistence>
+

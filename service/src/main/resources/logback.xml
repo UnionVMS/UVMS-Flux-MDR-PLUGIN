@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="false" scanPeriod="60 seconds" debug="false">
-    
-    <property resource="mdr.properties" />
-    
+
+    <property resource="mdr.properties"/>
+
     <contextName>${application.name}</contextName>
-    
-    <jmxConfigurator />
+
+    <jmxConfigurator/>
 
     <!-- FILE LOGGER -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
