@@ -27,7 +27,7 @@
         <audit.model.version>1.0.3</audit.model.version>
         <exchange.model.version>4.0.10-SNAPSHOT</exchange.model.version>
         <commons.lang.version>2.6</commons.lang.version>
-        <uvms.commons.version>3.0.10</uvms.commons.version>
+        <uvms.commons.version>3.0.15-SNAPSHOT</uvms.commons.version>
         <lombok.version>1.16.18</lombok.version>
         <jboss.connector.api.version>RELEASE</jboss.connector.api.version>
         <maven.compiler.source>1.7</maven.compiler.source>
