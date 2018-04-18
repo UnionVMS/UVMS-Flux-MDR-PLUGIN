@@ -38,12 +38,12 @@ import org.apache.commons.lang.StringUtils;
 @Slf4j
 public class StartupBean extends PluginDataHolder {
 
-    private static final int MAX_NUMBER_OF_TRIES = 3;
-    private boolean isRegistered                 = false;
-    private boolean isEnabled                    = false;
-    private boolean waitingForResponse           = false;
-    private int numberOfTriesExecuted            = 0;
-    private String registeredClassName           = StringUtils.EMPTY;
+    private static final int MAX_NUMBER_OF_TRIES = 10;
+    private boolean isRegistered = false;
+    private boolean isEnabled = false;
+    private boolean waitingForResponse = false;
+    private int numberOfTriesExecuted = 0;
+    private String registeredClassName = StringUtils.EMPTY;
 
     private static final String FAILED_TO_GET_SETTING_FOR_KEY = "Failed to getSetting for key: ";
     private static final String FAILED_TO_SEND_UNREGISTRATION_MESSAGE_TO = "Failed to send unregistration message to {}";
@@ -76,7 +76,7 @@ public class StartupBean extends PluginDataHolder {
 
         serviceType = ServiceMapper.getServiceType(
                 getRegisterClassName(),
-                getApplicationName(),
+                getApplicaionName(),
                 "This plugin handles sending and receiving MDR related messages to and from FLUX TL.",
                 PluginType.FLUX,
                 getPluginResponseSubscriptionName());
@@ -148,7 +148,6 @@ public class StartupBean extends PluginDataHolder {
         }
     }
 
-
     public String getPluginResponseSubscriptionName() {
         return getRegisterClassName() + getSetting("application.responseTopicName");
     }
@@ -161,10 +160,8 @@ public class StartupBean extends PluginDataHolder {
         return registeredClassName;
     }
 
-    public String getApplicaionName() {
+    private String getApplicaionName() {
         return getSetting("application.name");
-    private String getApplicationName() {
-        return getPLuginApplicationProperty("application.name");
     }
 
     public boolean isWaitingForResponse() {
