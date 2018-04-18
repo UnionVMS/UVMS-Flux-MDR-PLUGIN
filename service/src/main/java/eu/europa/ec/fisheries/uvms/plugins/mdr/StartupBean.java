@@ -87,7 +87,7 @@ public class StartupBean extends PluginDataHolder {
             log.debug("Setting: KEY: {} , VALUE: {}", entry.getKey(), entry.getValue());
         }
 
-        setIsOracleActive(Boolean.valueOf(super.getSettings().get(registeredClassName + ".oracle.is.active")));
+        setIsOracleActive(Boolean.valueOf(super.getSettings().get(registeredClassName + ".ORACLE_IS_ACTIVE")));
 
         log.info("PLUGIN STARTED");
     }
@@ -161,7 +161,7 @@ public class StartupBean extends PluginDataHolder {
     }
 
     private String getApplicaionName() {
-        return getSetting("application.name");
+        return getPLuginApplicationProperty("application.name");
     }
 
     public boolean isWaitingForResponse() {
