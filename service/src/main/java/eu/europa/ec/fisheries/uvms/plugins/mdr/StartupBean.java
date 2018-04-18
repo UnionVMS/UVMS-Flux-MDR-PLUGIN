@@ -38,12 +38,12 @@ import org.apache.commons.lang.StringUtils;
 @Slf4j
 public class StartupBean extends PluginDataHolder {
 
-    private static final int MAX_NUMBER_OF_TRIES = 10;
-    private boolean isRegistered = false;
-    private boolean isEnabled = false;
-    private boolean waitingForResponse = false;
-    private int numberOfTriesExecuted = 0;
-    private String registeredClassName = StringUtils.EMPTY;
+    private static final int MAX_NUMBER_OF_TRIES = 3;
+    private boolean isRegistered                 = false;
+    private boolean isEnabled                    = false;
+    private boolean waitingForResponse           = false;
+    private int numberOfTriesExecuted            = 0;
+    private String registeredClassName           = StringUtils.EMPTY;
 
     private static final String FAILED_TO_GET_SETTING_FOR_KEY = "Failed to getSetting for key: ";
     private static final String FAILED_TO_SEND_UNREGISTRATION_MESSAGE_TO = "Failed to send unregistration message to {}";
@@ -64,11 +64,9 @@ public class StartupBean extends PluginDataHolder {
 
         //This must be loaded first!!! Not doing that will end in dire problems later on!
         super.setPluginApplicaitonProperties(fileHandler.getPropertiesFromFile(PluginDataHolder.PLUGIN_PROPERTIES_KEY));
-        registeredClassName = getPLuginApplicationProperty("application.groupid");
-
-        //Theese can be loaded in any order
         super.setPluginProperties(fileHandler.getPropertiesFromFile(PluginDataHolder.PROPERTIES_KEY));
         super.setPluginCapabilities(fileHandler.getPropertiesFromFile(PluginDataHolder.CAPABILITIES_KEY));
+        registeredClassName = getPLuginApplicationProperty("application.groupid");
 
         ServiceMapper.mapToMapFromProperties(super.getSettings(), super.getPluginProperties(), getRegisterClassName());
         ServiceMapper.mapToMapFromProperties(super.getCapabilities(), super.getPluginCapabilities(), null);
@@ -78,7 +76,7 @@ public class StartupBean extends PluginDataHolder {
 
         serviceType = ServiceMapper.getServiceType(
                 getRegisterClassName(),
-                getApplicaionName(),
+                getApplicationName(),
                 "This plugin handles sending and receiving MDR related messages to and from FLUX TL.",
                 PluginType.FLUX,
                 getPluginResponseSubscriptionName());
@@ -131,7 +129,7 @@ public class StartupBean extends PluginDataHolder {
         }
     }
 
-    public String getPLuginApplicationProperty(String key) {
+    private String getPLuginApplicationProperty(String key) {
         try {
             return (String) super.getPluginApplicaitonProperties().get(key);
         } catch (Exception e) {
@@ -140,7 +138,7 @@ public class StartupBean extends PluginDataHolder {
         }
     }
 
-    public String getSetting(String key) {
+    private String getSetting(String key) {
         try {
             log.debug("Trying to get setting {} ", registeredClassName + "." + key);
             return super.getSettings().get(registeredClassName + "." + key);
@@ -149,6 +147,7 @@ public class StartupBean extends PluginDataHolder {
             return null;
         }
     }
+
 
     public String getPluginResponseSubscriptionName() {
         return getRegisterClassName() + getSetting("application.responseTopicName");
@@ -164,6 +163,8 @@ public class StartupBean extends PluginDataHolder {
 
     public String getApplicaionName() {
         return getSetting("application.name");
+    private String getApplicationName() {
+        return getPLuginApplicationProperty("application.name");
     }
 
     public boolean isWaitingForResponse() {
