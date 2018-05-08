@@ -15,7 +15,7 @@ import javax.persistence.PersistenceContext;
 
 public abstract class BaseMdrPluginBean {
 
-    protected static final String ORACLE_MDMD_STORED_PROC = "bp_mdm_clob_v1";
+    protected static final String ORACLE_MDMD_STORED_PROC = "BP_MDM_CLOB2_V1";
 
     private EntityManager em;
 
