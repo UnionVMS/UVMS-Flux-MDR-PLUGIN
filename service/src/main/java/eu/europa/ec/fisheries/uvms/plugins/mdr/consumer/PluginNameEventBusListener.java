@@ -50,6 +50,8 @@ import javax.jms.TextMessage;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import eu.europa.ec.fisheries.uvms.plugins.mdr.service.MdrPluginConfigurationCache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -78,6 +80,9 @@ public class PluginNameEventBusListener implements MessageListener {
     @EJB
     private ExchangePluginServiceBean exchangeService;
 
+    @EJB
+    private MdrPluginConfigurationCache mdrPluginConfigurationCache;
+
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
@@ -104,7 +109,7 @@ public class PluginNameEventBusListener implements MessageListener {
                 final Map<String, String> msgProps = createMessagePropertiesMap();
                 if(oracleMsgPoster.isActive()){
                     log.info("[INFO] Going to search for codelist in Oracle DB.");
-                    String response = oracleMsgPoster.postMessageToOracleDb(strRequest, "AHR:VMS", msgProps.get(BUSINESS_UUID));
+                    String response = oracleMsgPoster.postMessageToOracleDb(strRequest, mdrPluginConfigurationCache.getNationCode(), msgProps.get(BUSINESS_UUID));
                     exchangeService.sendFLUXMDRResponseMessageToExchange(response);
                 } else {
                     bridgeProducer.sendModuleMessageWithProps(strRequest, null, msgProps);
