@@ -9,27 +9,15 @@ details. You should have received a copy of the GNU General Public License along
 
  */package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.BUSINESS_UUID;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.CONNECTOR_ID;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.CONNECTOR_ID_VAL;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_AD;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_AD_VAL;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_AR;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_AR_VAL;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_DF;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_DF_VAL;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_TO;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_TODT;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_TO_VAL;
-
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.PluginBaseRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
+import eu.europa.ec.fisheries.uvms.commons.message.impl.JAXBUtils;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
+import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.MdrPluginConstants;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.FluxBridgeProducer;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -41,20 +29,26 @@ import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import eu.europa.ec.fisheries.uvms.plugins.mdr.service.MdrPluginConfigurationCache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
+
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.*;
 
 @MessageDriven(mappedName = MessageConstants.EVENT_BUS_TOPIC, activationConfig = {
         @ActivationConfigProperty(propertyName = MessageConstants.MESSAGING_TYPE_STR,          propertyValue = MessageConstants.CONNECTION_TYPE),
         @ActivationConfigProperty(propertyName = MessageConstants.SUBSCRIPTION_DURABILITY_STR, propertyValue = MessageConstants.DURABLE_CONNECTION),
         @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_TYPE_STR,        propertyValue = MessageConstants.DESTINATION_TYPE_TOPIC),
-        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_STR,            propertyValue = MessageConstants.EVENT_BUS_TOPIC_NAME),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_STR,             propertyValue = MessageConstants.EVENT_BUS_TOPIC_NAME),
         @ActivationConfigProperty(propertyName = MessageConstants.SUBSCRIPTION_NAME_STR,       propertyValue = MdrPluginConstants.SUBSCRIPTION_NAME_EV),
         @ActivationConfigProperty(propertyName = MessageConstants.CLIENT_ID_STR,               propertyValue = MdrPluginConstants.CLIENT_ID_EV),
         @ActivationConfigProperty(propertyName = MessageConstants.MESSAGE_SELECTOR_STR,        propertyValue = MdrPluginConstants.MESSAGE_SELECTOR_EV)
@@ -68,6 +62,9 @@ public class PluginNameEventBusListener implements MessageListener {
     @EJB
     private FluxBridgeProducer bridgeProducer;
 
+    @EJB
+    private MdrPluginConfigurationCache mdrPluginConfigurationCache;
+
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
@@ -75,10 +72,10 @@ public class PluginNameEventBusListener implements MessageListener {
         TextMessage textMessage = (TextMessage) inMessage;
         String strRequest = null;
         try {
-            PluginBaseRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, PluginBaseRequest.class);
+            PluginBaseRequest request = JAXBUtils.unMarshallMessage(textMessage.getText(), PluginBaseRequest.class);
             switch (request.getMethod()) {
                 case SET_MDR_REQUEST:
-                    SetMdrPluginRequest fluxMdrRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SetMdrPluginRequest.class);
+                    SetMdrPluginRequest fluxMdrRequest = JAXBUtils.unMarshallMessage(textMessage.getText(), SetMdrPluginRequest.class);
                     log.info("\n\nGot Request in MDR PLUGIN : " + fluxMdrRequest.getRequest());
                     strRequest = fluxMdrRequest.getRequest();
                     break;
@@ -86,10 +83,9 @@ public class PluginNameEventBusListener implements MessageListener {
                     log.error("Not supported method : " + " Class : " + request.getClass() + ". Method : " + request.getMethod());
                     break;
             }
-        } catch (ExchangeModelMarshallException | NullPointerException e) {
+        } catch (NullPointerException | JMSException | JAXBException e) {
             log.error("[ Error when receiving message in mdr plugin" + startup.getRegisterClassName() + " ]", e);
         }
-
         if (strRequest != null) {
             try {
                 bridgeProducer.sendModuleMessageWithProps(strRequest, null, createMessagePropertiesMap());
@@ -110,6 +106,7 @@ public class PluginNameEventBusListener implements MessageListener {
             put(BUSINESS_UUID, createBusinessUUID());
             put(FLUX_ENV_TODT, createStringDate());
             put(FLUX_ENV_AR, FLUX_ENV_AR_VAL);
+            put(FLUX_ENV_FR, mdrPluginConfigurationCache.getNationCode());
         }};
     }
 
