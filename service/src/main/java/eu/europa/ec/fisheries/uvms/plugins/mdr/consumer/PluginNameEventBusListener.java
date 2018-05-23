@@ -9,19 +9,6 @@ details. You should have received a copy of the GNU General Public License along
 
  */package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.BUSINESS_UUID;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.CONNECTOR_ID;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.CONNECTOR_ID_VAL;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_AD;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_AD_VAL;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_AR;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_AR_VAL;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_DF;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_DF_VAL;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_TO;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_TODT;
-import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.FLUX_ENV_TO_VAL;
-
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.PluginBaseRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
@@ -80,9 +67,6 @@ public class PluginNameEventBusListener implements MessageListener {
     @EJB
     private ExchangePluginServiceBean exchangeService;
 
-    @EJB
-    private MdrPluginConfigurationCache mdrPluginConfigurationCache;
-
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
@@ -133,6 +117,7 @@ public class PluginNameEventBusListener implements MessageListener {
             put(BUSINESS_UUID, createBusinessUUID());
             put(FLUX_ENV_TODT, createStringDate());
             put(FLUX_ENV_AR, FLUX_ENV_AR_VAL);
+            put(FLUX_ENV_FR, fr);
         }};
     }
 

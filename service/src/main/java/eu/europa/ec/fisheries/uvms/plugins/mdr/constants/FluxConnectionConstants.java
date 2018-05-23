@@ -29,6 +29,8 @@ public class FluxConnectionConstants {
     public static final String FLUX_ENV_TODT    = "TODT";
     public static final String FLUX_ENV_TODT_VAL= "20";
 
+    public static final String FLUX_ENV_FR = "FR";
+
     // Business procedure signature
     public static final String BUSINESS_PROCEDURE_PREFIX = "BP";
     public static final String BUSINESS_UUID             = "BUSINESS_UUID";
