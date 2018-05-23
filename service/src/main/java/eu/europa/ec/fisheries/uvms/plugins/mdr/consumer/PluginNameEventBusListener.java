@@ -14,21 +14,13 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.JAXBUtils;
-import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
-import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.MdrPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.FluxBridgeProducer;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.EJB;
-import javax.ejb.MessageDriven;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
+
+import javax.ejb.*;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -37,10 +29,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import eu.europa.ec.fisheries.uvms.plugins.mdr.service.MdrPluginConfigurationCache;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.time.DateUtils;
+import java.util.*;
 
 import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.*;
 
@@ -62,21 +51,20 @@ public class PluginNameEventBusListener implements MessageListener {
     @EJB
     private FluxBridgeProducer bridgeProducer;
 
-    @EJB
-    private MdrPluginConfigurationCache mdrPluginConfigurationCache;
-
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
         log.debug("Eventbus listener for mdr (MessageConstants.PLUGIN_SERVICE_CLASS_NAME): {}", startup.getRegisterClassName());
         TextMessage textMessage = (TextMessage) inMessage;
         String strRequest = null;
+        SetMdrPluginRequest fluxMdrRequest = null;
         try {
             PluginBaseRequest request = JAXBUtils.unMarshallMessage(textMessage.getText(), PluginBaseRequest.class);
             switch (request.getMethod()) {
                 case SET_MDR_REQUEST:
-                    SetMdrPluginRequest fluxMdrRequest = JAXBUtils.unMarshallMessage(textMessage.getText(), SetMdrPluginRequest.class);
-                    log.info("\n\nGot Request in MDR PLUGIN : " + fluxMdrRequest.getRequest());
+                    fluxMdrRequest = JAXBUtils.unMarshallMessage(textMessage.getText(), SetMdrPluginRequest.class);
+                    log.debug("\n [INFO] Got Request in MDR PLUGIN : " + fluxMdrRequest.getRequest());
+                    log.info("[INFO] Going to send sync request to : {}", fluxMdrRequest.getFr());
                     strRequest = fluxMdrRequest.getRequest();
                     break;
                 default:
@@ -88,7 +76,7 @@ public class PluginNameEventBusListener implements MessageListener {
         }
         if (strRequest != null) {
             try {
-                bridgeProducer.sendModuleMessageWithProps(strRequest, null, createMessagePropertiesMap());
+                bridgeProducer.sendModuleMessageWithProps(strRequest, null, createMessagePropertiesMap(fluxMdrRequest.getFr()));
             } catch (MessageException e) {
                 log.error("Error while trying to send message to bridge queue : ", e);
             }
@@ -97,7 +85,7 @@ public class PluginNameEventBusListener implements MessageListener {
         }
     }
 
-    private Map<String, String> createMessagePropertiesMap() {
+    private Map<String, String> createMessagePropertiesMap(final String fr) {
         return new HashMap<String, String>(){{
             put(CONNECTOR_ID, CONNECTOR_ID_VAL);
             put(FLUX_ENV_AD, FLUX_ENV_AD_VAL);
@@ -106,7 +94,7 @@ public class PluginNameEventBusListener implements MessageListener {
             put(BUSINESS_UUID, createBusinessUUID());
             put(FLUX_ENV_TODT, createStringDate());
             put(FLUX_ENV_AR, FLUX_ENV_AR_VAL);
-            put(FLUX_ENV_FR, mdrPluginConfigurationCache.getNationCode());
+            put(FLUX_ENV_FR, fr);
         }};
     }
 

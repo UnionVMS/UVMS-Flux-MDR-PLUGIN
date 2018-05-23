@@ -37,7 +37,7 @@ import org.dom4j.io.XMLWriter;
 public class FluxMdrRemoteMessageConsumer implements MessageListener {
 
     @EJB
-    ExchangeService exchangeService;
+    private ExchangeService exchangeService;
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
