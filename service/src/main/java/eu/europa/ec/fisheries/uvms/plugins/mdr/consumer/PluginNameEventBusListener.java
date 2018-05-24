@@ -13,35 +13,29 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.v1.PluginBaseRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
-import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
+import eu.europa.ec.fisheries.uvms.commons.message.impl.JAXBUtils;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.OracleMessagePoster;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.MdrPluginConstants;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.FluxBridgeProducer;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.service.ExchangePluginServiceBean;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.EJB;
-import javax.ejb.MessageDriven;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import eu.europa.ec.fisheries.uvms.plugins.mdr.service.MdrPluginConfigurationCache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+
+import javax.ejb.*;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+import javax.xml.bind.JAXBException;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.sql.SQLException;
+import java.util.*;
+
+import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.*;
 
 @MessageDriven(mappedName = MessageConstants.EVENT_BUS_TOPIC, activationConfig = {
         @ActivationConfigProperty(propertyName = MessageConstants.MESSAGING_TYPE_STR,          propertyValue = MessageConstants.CONNECTION_TYPE),
@@ -73,27 +67,29 @@ public class PluginNameEventBusListener implements MessageListener {
         log.debug("Eventbus listener for mdr (MessageConstants.PLUGIN_SERVICE_CLASS_NAME): {}", startup.getRegisterClassName());
         TextMessage textMessage = (TextMessage) inMessage;
         String strRequest = null;
+        SetMdrPluginRequest fluxMdrRequest = null;
         try {
-            PluginBaseRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, PluginBaseRequest.class);
+            PluginBaseRequest request = JAXBUtils.unMarshallMessage(textMessage.getText(), PluginBaseRequest.class);
             switch (request.getMethod()) {
                 case SET_MDR_REQUEST:
-                    SetMdrPluginRequest fluxMdrRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SetMdrPluginRequest.class);
-                    log.info("\n\nGot Request in MDR PLUGIN : " + fluxMdrRequest.getRequest());
+                    fluxMdrRequest = JAXBUtils.unMarshallMessage(textMessage.getText(), SetMdrPluginRequest.class);
+                    log.debug("\n\nGot Request in MDR PLUGIN : " + fluxMdrRequest.getRequest());
+                    log.info("[INFO] Going to send request with followinf FR : {}", fluxMdrRequest.getFr());
                     strRequest = fluxMdrRequest.getRequest();
                     break;
                 default:
                     log.error("Not supported method : " + " Class : " + request.getClass() + ". Method : " + request.getMethod());
                     break;
             }
-        } catch (ExchangeModelMarshallException | NullPointerException e) {
+        } catch (NullPointerException | JMSException | JAXBException e) {
             log.error("[ Error when receiving message in mdr plugin" + startup.getRegisterClassName() + " ]", e);
         }
         if (StringUtils.isNotEmpty(strRequest)) {
             try {
-                final Map<String, String> msgProps = createMessagePropertiesMap();
+                final Map<String, String> msgProps = createMessagePropertiesMap(fluxMdrRequest.getFr());
                 if(oracleMsgPoster.isActive()){
                     log.info("[INFO] Going to search for codelist in Oracle DB.");
-                    String response = oracleMsgPoster.postMessageToOracleDb(strRequest, mdrPluginConfigurationCache.getNationCode(), msgProps.get(BUSINESS_UUID));
+                    String response = oracleMsgPoster.postMessageToOracleDb(strRequest, fluxMdrRequest.getFr(), msgProps.get(BUSINESS_UUID));
                     exchangeService.sendFLUXMDRResponseMessageToExchange(response);
                 } else {
                     bridgeProducer.sendModuleMessageWithProps(strRequest, null, msgProps);
@@ -108,7 +104,7 @@ public class PluginNameEventBusListener implements MessageListener {
         }
     }
 
-    private Map<String, String> createMessagePropertiesMap() {
+    private Map<String, String> createMessagePropertiesMap(final String fr) {
         return new HashMap<String, String>(){{
             put(CONNECTOR_ID, CONNECTOR_ID_VAL);
             put(FLUX_ENV_AD, FLUX_ENV_AD_VAL);
