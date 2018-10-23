@@ -8,6 +8,13 @@
     <packaging>pom</packaging>
     <description>Plugin for MDR related communication with FLUX</description>
 
+    <parent>
+        <groupId>fish.focus.uvms.maven</groupId>
+        <artifactId>uvms-pom</artifactId>
+        <version>1.18</version>
+        <relativePath />
+    </parent>
+
     <properties>
         <!-- sonar -->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -30,8 +37,8 @@
         <uvms.commons.version>3.0.20</uvms.commons.version>
         <lombok.version>1.16.18</lombok.version>
         <jboss.connector.api.version>RELEASE</jboss.connector.api.version>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <jaxb.version>2.2.11</jaxb.version>
 
 		<scm.connection>scm:git:https://github.com/UnionVMS/UVMS-MDR-PLUGIN.git</scm.connection>
