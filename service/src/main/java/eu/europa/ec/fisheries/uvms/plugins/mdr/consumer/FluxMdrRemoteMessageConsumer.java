@@ -40,7 +40,6 @@ public class FluxMdrRemoteMessageConsumer implements MessageListener {
     private ExchangeService exchangeService;
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
         log.info("\n\n\t[[NEW MESSAGE]] Got message (from Flux) in Flux MDR plugin queue! \n\n");
         TextMessage textMessage = (TextMessage) inMessage;

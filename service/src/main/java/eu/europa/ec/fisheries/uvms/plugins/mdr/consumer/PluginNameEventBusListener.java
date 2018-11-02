@@ -52,7 +52,6 @@ public class PluginNameEventBusListener implements MessageListener {
     private FluxBridgeProducer bridgeProducer;
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
         log.debug("Eventbus listener for mdr (MessageConstants.PLUGIN_SERVICE_CLASS_NAME): {}", startup.getRegisterClassName());
         TextMessage textMessage = (TextMessage) inMessage;

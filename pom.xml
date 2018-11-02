@@ -11,7 +11,7 @@
     <parent>
         <groupId>fish.focus.uvms.maven</groupId>
         <artifactId>uvms-pom</artifactId>
-        <version>1.18</version>
+        <version>1.21</version>
         <relativePath />
     </parent>
 
@@ -34,12 +34,9 @@
         <audit.model.version>1.0.3</audit.model.version>
         <exchange.model.version>4.0.17</exchange.model.version>
         <commons.lang.version>2.6</commons.lang.version>
-        <uvms.commons.version>3.0.20</uvms.commons.version>
+        <uvms.commons.version>3.0.29</uvms.commons.version>
         <lombok.version>1.16.18</lombok.version>
         <jboss.connector.api.version>RELEASE</jboss.connector.api.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <jaxb.version>2.2.11</jaxb.version>
 
 		<scm.connection>scm:git:https://github.com/UnionVMS/UVMS-MDR-PLUGIN.git</scm.connection>
         <dom4j.version>2.0.0-RC1</dom4j.version>
