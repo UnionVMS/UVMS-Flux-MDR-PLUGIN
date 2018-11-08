@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
-    <artifactId>mdr-plugin</artifactId>
+    <artifactId>flux-mdr-plugin</artifactId>
     <version>1.0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>Plugin for MDR related communication with FLUX</description>
