@@ -15,16 +15,6 @@
     <build>
         <finalName>${project.name}</finalName>
         <plugins>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-            </plugin>
-
             <!-- This configuration specifies what ends up in application.xml -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -33,12 +23,20 @@
                 <configuration>
                     <modules>
                         <ejbModule>
-                            <groupId>${project.groupId}</groupId>  
+                            <groupId>${project.groupId}</groupId>
                             <artifactId>${project.parent.artifactId}-service</artifactId>
                         </ejbModule>
                     </modules>
                     <skinnyWars>true</skinnyWars>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
@@ -71,14 +69,6 @@
                             <force>true</force>
                         </configuration>
                     </plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-					</plugin>
                 </plugins>
             </build>
         </profile>        
