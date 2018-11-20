@@ -4,7 +4,7 @@
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
     <artifactId>flux-mdr-plugin</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.4-W14J8</version>
     <packaging>pom</packaging>
     <description>Plugin for MDR related communication with FLUX</description>
 
@@ -143,7 +143,7 @@
 
     <scm>
         <connection>${scm.connection}</connection>
-        <tag>HEAD</tag>
+        <tag>flux-mdr-plugin-1.0.4-W14J8</tag>
     </scm>
 
 	<profiles>
