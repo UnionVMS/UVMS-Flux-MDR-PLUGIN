@@ -12,9 +12,10 @@ package eu.europa.ec.fisheries.uvms.plugins.mdr.producer;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by kovian on 28/07/2017.

@@ -12,6 +12,7 @@ package eu.europa.ec.fisheries.uvms.plugins.mdr.producer;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractTopicProducer;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 

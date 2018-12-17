@@ -21,16 +21,13 @@ import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMa
 import eu.europa.ec.fisheries.uvms.plugins.mdr.mapper.ServiceMapper;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.PluginToEventBusTopicProducer;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.service.FileHandlerBean;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.ejb.DependsOn;
-import javax.ejb.EJB;
-import javax.ejb.Schedule;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.ejb.*;
+import java.util.Map;
 
 @Singleton
 @Startup
