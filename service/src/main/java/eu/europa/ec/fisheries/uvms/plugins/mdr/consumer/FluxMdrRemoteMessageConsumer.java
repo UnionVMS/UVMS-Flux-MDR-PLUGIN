@@ -12,21 +12,18 @@ package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.service.ExchangeService;
-import java.io.StringWriter;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.EJB;
-import javax.ejb.MessageDriven;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
+import eu.europa.ec.fisheries.uvms.plugins.mdr.service.ExchangePluginServiceBean;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+
+import javax.ejb.*;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+import java.io.StringWriter;
 
 @MessageDriven(mappedName = MessageConstants.FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME, activationConfig = {
         @ActivationConfigProperty(propertyName = MessageConstants.MESSAGING_TYPE_STR, propertyValue = MessageConstants.CONNECTION_TYPE),
@@ -37,7 +34,7 @@ import org.dom4j.io.XMLWriter;
 public class FluxMdrRemoteMessageConsumer implements MessageListener {
 
     @EJB
-    private ExchangeService exchangeService;
+    private ExchangePluginServiceBean exchangeService;
 
     @Override
     public void onMessage(Message inMessage) {
@@ -59,7 +56,7 @@ public class FluxMdrRemoteMessageConsumer implements MessageListener {
      * @param xml
      * @return formattedXml
      */
-    public static String prettyPrintXml(String xml) {
+    private static String prettyPrintXml(String xml) {
         StringWriter sw = new StringWriter();
         try {
             final OutputFormat format = OutputFormat.createPrettyPrint();

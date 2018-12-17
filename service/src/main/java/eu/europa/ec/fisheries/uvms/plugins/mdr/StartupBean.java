@@ -7,7 +7,8 @@ the License, or any later version. The IFDM Suite is distributed in the hope tha
 without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
 details. You should have received a copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
 
- */package eu.europa.ec.fisheries.uvms.plugins.mdr;
+ */
+package eu.europa.ec.fisheries.uvms.plugins.mdr;
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.CapabilityListType;
@@ -37,14 +38,14 @@ import org.apache.commons.lang.StringUtils;
 @Slf4j
 public class StartupBean extends PluginDataHolder {
 
-    private static final int MAX_NUMBER_OF_TRIES = 3;
-    private boolean isRegistered                 = false;
-    private boolean isEnabled                    = false;
-    private boolean waitingForResponse           = false;
-    private int numberOfTriesExecuted            = 0;
-    private String registeredClassName           = StringUtils.EMPTY;
+    private static final int MAX_NUMBER_OF_TRIES = 10;
+    private boolean isRegistered = false;
+    private boolean isEnabled = false;
+    private boolean waitingForResponse = false;
+    private int numberOfTriesExecuted = 0;
+    private String registeredClassName = StringUtils.EMPTY;
 
-    private static final String FAILED_TO_GET_SETTING_FOR_KEY            = "Failed to getSetting for key: ";
+    private static final String FAILED_TO_GET_SETTING_FOR_KEY = "Failed to getSetting for key: ";
     private static final String FAILED_TO_SEND_UNREGISTRATION_MESSAGE_TO = "Failed to send unregistration message to {}";
 
     @EJB
@@ -56,6 +57,7 @@ public class StartupBean extends PluginDataHolder {
     private CapabilityListType capabilities;
     private SettingListType settingList;
     private ServiceType serviceType;
+    private boolean isOracleActive;
 
     @PostConstruct
     public void startup() {
@@ -74,7 +76,7 @@ public class StartupBean extends PluginDataHolder {
 
         serviceType = ServiceMapper.getServiceType(
                 getRegisterClassName(),
-                getApplicationName(),
+                getApplicaionName(),
                 "This plugin handles sending and receiving MDR related messages to and from FLUX TL.",
                 PluginType.FLUX,
                 getPluginResponseSubscriptionName());
@@ -84,6 +86,8 @@ public class StartupBean extends PluginDataHolder {
         for (Map.Entry<String, String> entry : super.getSettings().entrySet()) {
             log.debug("Setting: KEY: {} , VALUE: {}", entry.getKey(), entry.getValue());
         }
+
+        setIsOracleActive(Boolean.valueOf(super.getSettings().get(registeredClassName + ".ORACLE_IS_ACTIVE")));
 
         log.info("PLUGIN STARTED");
     }
@@ -110,7 +114,7 @@ public class StartupBean extends PluginDataHolder {
             String registerServiceRequest = ExchangeModuleRequestMapper.createRegisterServiceRequest(serviceType, capabilities, settingList);
             messageProducer.sendEventBusMessage(registerServiceRequest, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
         } catch (MessageException | ExchangeModelMarshallException e) {
-            log.error("Failed to send registration message to {}", ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE,e);
+            log.error("Failed to send registration message to {}", ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE, e);
             setWaitingForResponse(false);
         }
     }
@@ -121,7 +125,7 @@ public class StartupBean extends PluginDataHolder {
             String unregisterServiceRequest = ExchangeModuleRequestMapper.createUnregisterServiceRequest(serviceType);
             messageProducer.sendEventBusMessage(unregisterServiceRequest, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
         } catch (MessageException | ExchangeModelMarshallException e) {
-            log.error(FAILED_TO_SEND_UNREGISTRATION_MESSAGE_TO, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE,e);
+            log.error(FAILED_TO_SEND_UNREGISTRATION_MESSAGE_TO, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE, e);
         }
     }
 
@@ -129,7 +133,7 @@ public class StartupBean extends PluginDataHolder {
         try {
             return (String) super.getPluginApplicaitonProperties().get(key);
         } catch (Exception e) {
-            log.error(FAILED_TO_GET_SETTING_FOR_KEY + key, getRegisterClassName(),e);
+            log.error(FAILED_TO_GET_SETTING_FOR_KEY + key, getRegisterClassName(), e);
             return null;
         }
     }
@@ -139,40 +143,56 @@ public class StartupBean extends PluginDataHolder {
             log.debug("Trying to get setting {} ", registeredClassName + "." + key);
             return super.getSettings().get(registeredClassName + "." + key);
         } catch (Exception e) {
-            log.error(FAILED_TO_GET_SETTING_FOR_KEY + key, registeredClassName,e);
+            log.error(FAILED_TO_GET_SETTING_FOR_KEY + key, registeredClassName, e);
             return null;
         }
     }
 
-
     public String getPluginResponseSubscriptionName() {
         return getRegisterClassName() + getSetting("application.responseTopicName");
     }
+
     public String getResponseTopicMessageName() {
         return getSetting("application.groupid");
     }
+
     public String getRegisterClassName() {
         return registeredClassName;
     }
-    private String getApplicationName() {
+
+    private String getApplicaionName() {
         return getPLuginApplicationProperty("application.name");
     }
+
     public boolean isWaitingForResponse() {
         return waitingForResponse;
     }
+
     public void setWaitingForResponse(boolean waitingForResponse) {
         this.waitingForResponse = waitingForResponse;
     }
+
     public boolean isIsRegistered() {
         return isRegistered;
     }
+
     public void setIsRegistered(boolean isRegistered) {
         this.isRegistered = isRegistered;
     }
+
     public boolean isIsEnabled() {
         return isEnabled;
     }
+
     public void setIsEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
+    }
+
+    public void setIsOracleActive(boolean isActive) {
+        isOracleActive = isActive;
+    }
+
+    public boolean getIsOracleActive() {
+        return isOracleActive;
     }
 }
