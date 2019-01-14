@@ -34,7 +34,7 @@
         <audit.model.version>1.0.3</audit.model.version>
         <exchange.model.version>4.0.17</exchange.model.version>
         <commons.lang.version>2.6</commons.lang.version>
-        <uvms.commons.version>3.0.29</uvms.commons.version>
+        <uvms.commons.version>3.0.31-W14J8</uvms.commons.version>
         <lombok.version>1.16.18</lombok.version>
         <jboss.connector.api.version>RELEASE</jboss.connector.api.version>
 
