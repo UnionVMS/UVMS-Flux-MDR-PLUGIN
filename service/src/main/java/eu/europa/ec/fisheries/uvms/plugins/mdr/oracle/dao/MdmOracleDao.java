@@ -12,18 +12,17 @@ package eu.europa.ec.fisheries.uvms.plugins.mdr.oracle.dao;
 
 import eu.europa.ec.fisheries.uvms.plugins.mdr.saxparser.MdrSaxaprserAcronymExtractor;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.saxparser.MdrType;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.xml.sax.SAXException;
-
-import javax.persistence.EntityManager;
-import javax.persistence.ParameterMode;
-import javax.persistence.StoredProcedureQuery;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.sql.Clob;
 import java.sql.SQLException;
+import javax.persistence.EntityManager;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureQuery;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.xml.sax.SAXException;
 
 @Slf4j
 public class MdmOracleDao {

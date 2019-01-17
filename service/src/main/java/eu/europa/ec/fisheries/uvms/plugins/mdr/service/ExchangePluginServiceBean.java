@@ -14,11 +14,10 @@ import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.PluginToExchangeProducer;
-import lombok.extern.slf4j.Slf4j;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * EJB needed for sending messages to Exchange queue

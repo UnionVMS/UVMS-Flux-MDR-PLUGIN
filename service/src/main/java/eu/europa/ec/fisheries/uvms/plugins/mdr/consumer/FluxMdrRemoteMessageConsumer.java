@@ -18,9 +18,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.EJB;
-import javax.ejb.MessageDriven;
+import javax.ejb.*;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;

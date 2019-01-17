@@ -12,13 +12,12 @@ package eu.europa.ec.fisheries.uvms.plugins.mdr;
 
 import eu.europa.ec.fisheries.uvms.plugins.mdr.oracle.BaseMdrPluginBean;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.oracle.dao.MdmOracleDao;
-import lombok.extern.slf4j.Slf4j;
-
+import java.sql.SQLException;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import java.sql.SQLException;
+import lombok.extern.slf4j.Slf4j;
 
 @Stateless
 @LocalBean

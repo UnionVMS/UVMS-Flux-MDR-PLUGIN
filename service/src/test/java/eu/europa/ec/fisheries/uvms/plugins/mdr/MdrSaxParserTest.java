@@ -10,18 +10,17 @@ details. You should have received a copy of the GNU General Public License along
 */
 package eu.europa.ec.fisheries.uvms.plugins.mdr;
 
+import static org.junit.Assert.assertNotNull;
+
 import eu.europa.ec.fisheries.uvms.plugins.mdr.saxparser.MdrSaxaprserAcronymExtractor;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.saxparser.MdrType;
+import java.io.PrintStream;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xml.sax.SAXException;
-
-import java.io.PrintStream;
-
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MdrSaxParserTest {
