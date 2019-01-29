@@ -9,7 +9,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
         <artifactId>mdr-plugin-oracle-xeu</artifactId>
-        <version>1.0.4-SNAPSHOT</version>
+        <version>1.0.6-W14J8-MARE</version>
     </parent>
 
     <build>
