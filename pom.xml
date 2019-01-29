@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
-    <artifactId>mdr-plugin</artifactId>
+    <artifactId>flux-mdr-plugin</artifactId>
     <version>1.0.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>Plugin for MDR related communication with FLUX</description>
@@ -163,7 +163,7 @@
             </distributionManagement>
 
             <properties>
-                <scm.connection>scm:git:https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-mdr-plugin.git</scm.connection>
+                <scm.connection>scm:git:https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-flux-mdr-plugin.git</scm.connection>
             </properties>
         </profile>
         <!-- enforce-jdk-version -->
