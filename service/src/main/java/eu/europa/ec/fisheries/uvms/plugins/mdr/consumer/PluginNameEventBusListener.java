@@ -62,7 +62,6 @@ public class PluginNameEventBusListener implements MessageListener {
     private ExchangePluginServiceBean exchangeService;
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
         log.debug("Eventbus listener for mdr (MessageConstants.PLUGIN_SERVICE_CLASS_NAME): {}", startup.getRegisterClassName());
         TextMessage textMessage = (TextMessage) inMessage;
@@ -73,8 +72,8 @@ public class PluginNameEventBusListener implements MessageListener {
             switch (request.getMethod()) {
                 case SET_MDR_REQUEST:
                     fluxMdrRequest = JAXBUtils.unMarshallMessage(textMessage.getText(), SetMdrPluginRequest.class);
-                    log.debug("\n\nGot Request in MDR PLUGIN : " + fluxMdrRequest.getRequest());
-                    log.info("[INFO] Going to send request with followinf FR : {}", fluxMdrRequest.getFr());
+                    log.debug("\n [INFO] Got Request in MDR PLUGIN : " + fluxMdrRequest.getRequest());
+                    log.info("[INFO] Going to send sync request to : {}", fluxMdrRequest.getFr());
                     strRequest = fluxMdrRequest.getRequest();
                     break;
                 default:

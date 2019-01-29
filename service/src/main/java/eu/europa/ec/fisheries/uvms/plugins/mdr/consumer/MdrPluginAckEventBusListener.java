@@ -44,7 +44,6 @@ public class MdrPluginAckEventBusListener implements MessageListener {
     private StartupBean startupService;
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
         LOG.info("Eventbus listener for mdr at selector: {} got a message", startupService.getPluginResponseSubscriptionName());
         TextMessage textMessage = (TextMessage) inMessage;
