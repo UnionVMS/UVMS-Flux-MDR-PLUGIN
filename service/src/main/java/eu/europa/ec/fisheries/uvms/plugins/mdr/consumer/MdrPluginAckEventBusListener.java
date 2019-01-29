@@ -41,7 +41,7 @@ public class MdrPluginAckEventBusListener implements MessageListener {
     final static Logger LOG = LoggerFactory.getLogger(MdrPluginAckEventBusListener.class);
 
     @EJB
-    StartupBean startupService;
+    private StartupBean startupService;
 
     @Override
     public void onMessage(Message inMessage) {

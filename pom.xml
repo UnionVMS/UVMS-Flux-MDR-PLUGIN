@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
-    <artifactId>flux-mdr-plugin</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <artifactId>mdr-plugin-oracle-xeu</artifactId>
+    <version>1.0.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>Plugin for MDR related communication with FLUX</description>
 
@@ -38,6 +37,10 @@
         <uvms.commons.version>3.3-W14J8</uvms.commons.version>
         <lombok.version>1.16.18</lombok.version>
         <jboss.connector.api.version>RELEASE</jboss.connector.api.version>
+
+        <hibernate.version>4.3.11.Final</hibernate.version>
+        <hibernate.validator.version>4.3.2.Final</hibernate.validator.version>
+        <hibernate-entitymanager.version>4.3.11.Final</hibernate-entitymanager.version>
 
 		<scm.connection>scm:git:https://github.com/UnionVMS/UVMS-MDR-PLUGIN.git</scm.connection>
         <dom4j.version>2.0.0-RC1</dom4j.version>
@@ -123,6 +126,18 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate.validator.version}</version>
             </dependency>
 
         </dependencies>

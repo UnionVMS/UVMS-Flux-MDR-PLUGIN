@@ -10,8 +10,6 @@ details. You should have received a copy of the GNU General Public License along
  */
 package eu.europa.ec.fisheries.uvms.plugins.mdr;
 
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
-
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -32,16 +30,12 @@ public abstract class PluginDataHolder {
 
     private final ConcurrentMap<String, String> settings = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, String> capabilities = new ConcurrentHashMap<>();
-    private final ConcurrentMap<String, SetReportMovementType> cachedMovement = new ConcurrentHashMap<>();
 
     public ConcurrentMap<String, String> getSettings() {
         return settings;
     }
     public ConcurrentMap<String, String> getCapabilities() {
         return capabilities;
-    }
-    public ConcurrentMap<String, SetReportMovementType> getCachedMovement() {
-        return cachedMovement;
     }
     public Properties getPluginApplicaitonProperties() {
         return mdrApplicaitonProperties;
