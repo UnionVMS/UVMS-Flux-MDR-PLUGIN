@@ -14,16 +14,16 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.JAXBUtils;
-import eu.europa.ec.fisheries.uvms.plugins.mdr.OracleMessagePoster;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.MdrPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.FluxBridgeProducer;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.service.ExchangePluginServiceBean;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
-import javax.ejb.*;
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.EJB;
+import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -32,7 +32,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.sql.SQLException;
 import java.util.*;
 
 import static eu.europa.ec.fisheries.uvms.plugins.mdr.constants.FluxConnectionConstants.*;
@@ -54,9 +53,6 @@ public class PluginNameEventBusListener implements MessageListener {
 
     @EJB
     private FluxBridgeProducer bridgeProducer;
-
-    @EJB
-    private OracleMessagePoster oracleMsgPoster;
 
     @EJB
     private ExchangePluginServiceBean exchangeService;
@@ -83,23 +79,14 @@ public class PluginNameEventBusListener implements MessageListener {
         } catch (NullPointerException | JMSException | JAXBException e) {
             log.error("[ Error when receiving message in mdr plugin" + startup.getRegisterClassName() + " ]", e);
         }
-        if (StringUtils.isNotEmpty(strRequest)) {
+        if (strRequest != null) {
             try {
-                final Map<String, String> msgProps = createMessagePropertiesMap(fluxMdrRequest.getFr());
-                if(oracleMsgPoster.isActive()){
-                    log.info("[INFO] Going to search for codelist in Oracle DB.");
-                    String response = oracleMsgPoster.postMessageToOracleDb(strRequest, fluxMdrRequest.getFr(), msgProps.get(BUSINESS_UUID));
-                    exchangeService.sendFLUXMDRResponseMessageToExchange(response);
-                } else {
-                    bridgeProducer.sendModuleMessageWithProps(strRequest, null, msgProps);
-                }
+                bridgeProducer.sendModuleMessageWithProps(strRequest, null, createMessagePropertiesMap(fluxMdrRequest.getFr()));
             } catch (MessageException e) {
-                log.error("[ERROR] Error while trying to send message to bridge queue : ", e);
-            } catch (SQLException e) {
-                log.error("[ERROR] Error while trying to call stored procedure in oracle db : ", e);
+                log.error("Error while trying to send message to bridge queue : ", e);
             }
         } else {
-            log.warn("[WARN] The request to be sent to Bridge cannot be empty! Not sending anything..");
+            log.warn("-->>> The request to be sent to Bridge cannot be empty! Not sending anything..");
         }
     }
 

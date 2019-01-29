@@ -57,7 +57,6 @@ public class StartupBean extends PluginDataHolder {
     private CapabilityListType capabilities;
     private SettingListType settingList;
     private ServiceType serviceType;
-    private boolean isOracleActive;
 
     @PostConstruct
     public void startup() {
@@ -86,8 +85,6 @@ public class StartupBean extends PluginDataHolder {
         for (Map.Entry<String, String> entry : super.getSettings().entrySet()) {
             log.debug("Setting: KEY: {} , VALUE: {}", entry.getKey(), entry.getValue());
         }
-
-        setIsOracleActive(Boolean.valueOf(super.getSettings().get(registeredClassName + ".ORACLE_IS_ACTIVE")));
 
         log.info("PLUGIN STARTED");
     }
@@ -188,11 +185,4 @@ public class StartupBean extends PluginDataHolder {
         this.isEnabled = isEnabled;
     }
 
-    public void setIsOracleActive(boolean isActive) {
-        isOracleActive = isActive;
-    }
-
-    public boolean getIsOracleActive() {
-        return isOracleActive;
-    }
 }
