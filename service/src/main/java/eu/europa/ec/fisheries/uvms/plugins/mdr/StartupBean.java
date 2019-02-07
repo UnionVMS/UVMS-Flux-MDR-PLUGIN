@@ -186,11 +186,11 @@ public class StartupBean extends PluginDataHolder {
         this.isEnabled = isEnabled;
     }
 
-    public void setIsOracleActive(boolean isActive) {
+    private void setIsOracleActive(boolean isActive) {
         isOracleActive = isActive;
     }
 
-    public boolean getIsOracleActive() {
+    boolean getIsOracleActive() {
         return isOracleActive;
     }
 }
