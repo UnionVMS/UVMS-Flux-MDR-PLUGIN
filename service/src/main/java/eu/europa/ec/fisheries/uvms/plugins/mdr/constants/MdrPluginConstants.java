@@ -14,8 +14,8 @@ public final class MdrPluginConstants {
 
 	private MdrPluginConstants(){}
 
-	public static final String MDR_GROUP_ID_ARTIFACT_ID    = "eu.europa.ec.fisheries.uvms.plugins.mdr";
-	public static final String MDR_GROUP_ID_ARTIFACT_ID_AC = "eu.europa.ec.fisheries.uvms.plugins.mdrPLUGIN_RESPONSE";
+	private static final String MDR_GROUP_ID_ARTIFACT_ID    = "eu.europa.ec.fisheries.uvms.plugins.flux.mdr";
+	private static final String MDR_GROUP_ID_ARTIFACT_ID_AC = "eu.europa.ec.fisheries.uvms.plugins.flux.mdrPLUGIN_RESPONSE";
 
 	public static final String CLIENT_ID_EV         = MDR_GROUP_ID_ARTIFACT_ID;
 	public static final String SUBSCRIPTION_NAME_EV = MDR_GROUP_ID_ARTIFACT_ID;

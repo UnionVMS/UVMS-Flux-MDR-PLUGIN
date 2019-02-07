@@ -20,9 +20,9 @@ import java.util.concurrent.ConcurrentMap;
  */
 public abstract class PluginDataHolder {
 
-    public static final String PLUGIN_PROPERTIES_KEY = "mdr.properties";
-    public static final String PROPERTIES_KEY        = "settings.properties";
-    public static final String CAPABILITIES_KEY      = "capabilities.properties";
+    static final String PLUGIN_PROPERTIES_KEY = "mdr.properties";
+    static final String PROPERTIES_KEY        = "settings.properties";
+    static final String CAPABILITIES_KEY      = "capabilities.properties";
 
     private Properties mdrApplicaitonProperties;
     private Properties mdrProperties;
@@ -30,30 +30,34 @@ public abstract class PluginDataHolder {
 
     private final ConcurrentMap<String, String> settings = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, String> capabilities = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, String> properties = new ConcurrentHashMap<>();
 
     public ConcurrentMap<String, String> getSettings() {
         return settings;
     }
-    public ConcurrentMap<String, String> getCapabilities() {
+    ConcurrentMap<String, String> getCapabilities() {
         return capabilities;
     }
-    public Properties getPluginApplicaitonProperties() {
+    Properties getPluginApplicaitonProperties() {
         return mdrApplicaitonProperties;
     }
-    public void setPluginApplicaitonProperties(Properties mdrApplicaitonProperties) {
+    void setPluginApplicaitonProperties(Properties mdrApplicaitonProperties) {
         this.mdrApplicaitonProperties = mdrApplicaitonProperties;
     }
-    public Properties getPluginProperties() {
+    Properties getPluginProperties() {
         return mdrProperties;
     }
-    public void setPluginProperties(Properties mdrProperties) {
+    void setPluginProperties(Properties mdrProperties) {
         this.mdrProperties = mdrProperties;
     }
-    public Properties getPluginCapabilities() {
+    Properties getPluginCapabilities() {
         return mdrCapabilities;
     }
-    public void setPluginCapabilities(Properties mdrCapabilities) {
+    void setPluginCapabilities(Properties mdrCapabilities) {
         this.mdrCapabilities = mdrCapabilities;
     }
 
+    ConcurrentMap<String, String> getProperties() {
+        return properties;
+    }
 }

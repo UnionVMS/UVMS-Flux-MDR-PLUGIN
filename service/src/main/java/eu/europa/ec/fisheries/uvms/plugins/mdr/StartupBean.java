@@ -69,6 +69,7 @@ public class StartupBean extends PluginDataHolder {
 
         ServiceMapper.mapToMapFromProperties(super.getSettings(), super.getPluginProperties(), getRegisterClassName());
         ServiceMapper.mapToMapFromProperties(super.getCapabilities(), super.getPluginCapabilities(), null);
+        ServiceMapper.mapToMapFromProperties(super.getProperties(), super.getPluginApplicaitonProperties(), null);
 
         capabilities = ServiceMapper.getCapabilitiesListTypeFromMap(super.getCapabilities());
         settingList = ServiceMapper.getSettingsListTypeFromMap(super.getSettings());
@@ -146,7 +147,7 @@ public class StartupBean extends PluginDataHolder {
     }
 
     public String getPluginResponseSubscriptionName() {
-        return getRegisterClassName() + getSetting("application.responseTopicName");
+        return getRegisterClassName() + getProperties().get("application.responseTopicName");
     }
 
     public String getResponseTopicMessageName() {

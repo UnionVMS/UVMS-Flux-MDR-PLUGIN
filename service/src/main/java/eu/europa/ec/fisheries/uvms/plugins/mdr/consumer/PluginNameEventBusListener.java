@@ -10,10 +10,13 @@ details. You should have received a copy of the GNU General Public License along
  */package eu.europa.ec.fisheries.uvms.plugins.mdr.consumer;
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.PluginBaseRequest;
+import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetConfigRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetMdrPluginRequest;
+import eu.europa.ec.fisheries.schema.exchange.plugin.v1.StartRequest;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
-import eu.europa.ec.fisheries.uvms.commons.message.impl.JAXBUtils;
+import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
+import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.constants.MdrPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.mdr.producer.FluxBridgeProducer;
@@ -24,11 +27,9 @@ import org.apache.commons.lang3.time.DateUtils;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -63,20 +64,30 @@ public class PluginNameEventBusListener implements MessageListener {
         TextMessage textMessage = (TextMessage) inMessage;
         String strRequest = null;
         SetMdrPluginRequest fluxMdrRequest = null;
+        boolean isSetMdrReq = false;
         try {
-            PluginBaseRequest request = JAXBUtils.unMarshallMessage(textMessage.getText(), PluginBaseRequest.class);
+            PluginBaseRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, PluginBaseRequest.class);
             switch (request.getMethod()) {
                 case SET_MDR_REQUEST:
-                    fluxMdrRequest = JAXBUtils.unMarshallMessage(textMessage.getText(), SetMdrPluginRequest.class);
+                    fluxMdrRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SetMdrPluginRequest.class);
                     log.debug("\n [INFO] Got Request in MDR PLUGIN : " + fluxMdrRequest.getRequest());
                     log.info("[INFO] Going to send sync request to : {}", fluxMdrRequest.getFr());
                     strRequest = fluxMdrRequest.getRequest();
+                    isSetMdrReq = true;
+                    break;
+                case SET_CONFIG :
+                    SetConfigRequest setConfig = JAXBMarshaller.unmarshallTextMessage(textMessage, SetConfigRequest.class);
+                    log.info("[CONFIG] Config(s) [{}] was correctly set.", setConfig.getConfigurations());
+                    break;
+                case START :
+                    StartRequest startReq = JAXBMarshaller.unmarshallTextMessage(textMessage, StartRequest.class);
+                    log.info("[STARTED] Plugin was started!");
                     break;
                 default:
                     log.error("Not supported method : " + " Class : " + request.getClass() + ". Method : " + request.getMethod());
                     break;
             }
-        } catch (NullPointerException | JMSException | JAXBException e) {
+        } catch (NullPointerException | ExchangeModelMarshallException e) {
             log.error("[ Error when receiving message in mdr plugin" + startup.getRegisterClassName() + " ]", e);
         }
         if (strRequest != null) {
@@ -85,7 +96,7 @@ public class PluginNameEventBusListener implements MessageListener {
             } catch (MessageException e) {
                 log.error("Error while trying to send message to bridge queue : ", e);
             }
-        } else {
+        } else if(isSetMdrReq){
             log.warn("-->>> The request to be sent to Bridge cannot be empty! Not sending anything..");
         }
     }
