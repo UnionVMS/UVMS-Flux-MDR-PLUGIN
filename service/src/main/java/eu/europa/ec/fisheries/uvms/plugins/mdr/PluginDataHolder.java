@@ -30,6 +30,7 @@ public abstract class PluginDataHolder {
 
     private final ConcurrentMap<String, String> settings = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, String> capabilities = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, String> properties = new ConcurrentHashMap<>();
 
     public ConcurrentMap<String, String> getSettings() {
         return settings;
@@ -56,4 +57,7 @@ public abstract class PluginDataHolder {
         this.mdrCapabilities = mdrCapabilities;
     }
 
+    ConcurrentMap<String, String> getProperties() {
+        return properties;
+    }
 }
