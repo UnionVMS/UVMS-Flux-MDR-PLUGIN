@@ -190,7 +190,7 @@ public class StartupBean extends PluginDataHolder {
         isOracleActive = isActive;
     }
 
-    boolean getIsOracleActive() {
+    public boolean getIsOracleActive() {
         return isOracleActive;
     }
 }
