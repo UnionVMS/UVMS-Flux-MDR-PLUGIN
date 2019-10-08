@@ -32,7 +32,7 @@
         <logback.version>1.1.2</logback.version>
         <logback.core.version>1.1.2</logback.core.version>
         <audit.model.version>1.0.3</audit.model.version>
-        <exchange.model.version>4.0.17</exchange.model.version>
+        <exchange.model.version>4.0.20</exchange.model.version>
         <commons.lang.version>2.6</commons.lang.version>
         <uvms.commons.version>3.3-W14J8</uvms.commons.version>
         <lombok.version>1.16.18</lombok.version>
@@ -42,13 +42,19 @@
         <hibernate.validator.version>4.3.2.Final</hibernate.validator.version>
         <hibernate-entitymanager.version>4.3.11.Final</hibernate-entitymanager.version>
 
-		<scm.connection>scm:git:https://github.com/UnionVMS/UVMS-MDR-PLUGIN.git</scm.connection>
+        <scm.connection>scm:git:https://github.com/UnionVMS/UVMS-MDR-PLUGIN.git</scm.connection>
         <dom4j.version>2.0.0-RC1</dom4j.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-
+            <dependency>
+                <groupId>eu.europa.ec.fisheries.uvms.config</groupId>
+                <artifactId>config-model</artifactId>
+                <version>4.0.11</version>
+            </dependency>
+            
+            
             <dependency>
                 <groupId>javax</groupId>
                 <artifactId>javaee-api</artifactId>
@@ -138,7 +144,7 @@
 
     </dependencyManagement>
 
-	<distributionManagement>
+    <distributionManagement>
         <repository>
             <id>focus-releases</id>
             <name>UnionVms Repository</name>
@@ -156,8 +162,8 @@
         <tag>HEAD</tag>
     </scm>
 
-	<profiles>
-		<profile>
+    <profiles>
+        <profile>
             <id>dg-mare</id>
             <distributionManagement>
                 <repository>
@@ -252,7 +258,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <version>${maven.release.plugin.version}</version>
-               <dependencies>
+                <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.scm</groupId>
                         <artifactId>maven-scm-provider-gitexe</artifactId>
@@ -302,7 +308,7 @@
                     </execution>
                 </executions>
             </plugin>
-<!--            <plugin>
+            <!--            <plugin>
                 <groupId>eu.europa.ec.fisheries.uvms.mavenPlugins</groupId>
                 <artifactId>european-license-checker-maven-plugin</artifactId>
                 <version>1.2-SNAPSHOT</version>
