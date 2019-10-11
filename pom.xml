@@ -32,9 +32,9 @@
         <logback.version>1.1.2</logback.version>
         <logback.core.version>1.1.2</logback.core.version>
         <audit.model.version>1.0.3</audit.model.version>
-        <exchange.model.version>4.0.17</exchange.model.version>
+        <exchange.model.version>4.0.35-SNAPSHOT</exchange.model.version>
         <commons.lang.version>2.6</commons.lang.version>
-        <uvms.commons.version>3.3-W14J8</uvms.commons.version>
+        <uvms.commons.version>3.4-SNAPSHOT</uvms.commons.version>
         <lombok.version>1.16.18</lombok.version>
         <jboss.connector.api.version>RELEASE</jboss.connector.api.version>
 
