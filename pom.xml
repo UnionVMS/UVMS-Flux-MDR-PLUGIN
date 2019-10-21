@@ -2,18 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
-    <artifactId>flux-mdr-plugin-mare</artifactId>
-    <version>1.0.8-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <description>Plugin for MDR related communication with FLUX</description>
-
     <parent>
-        <groupId>fish.focus.uvms.maven</groupId>
-        <artifactId>uvms-pom</artifactId>
-        <version>1.21</version>
+        <groupId>eu.europa.ec.fisheries.uvms</groupId>
+        <artifactId>mare-pom</artifactId>
+        <version>1.6.0-MARE</version>
         <relativePath />
     </parent>
+
+    <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
+    <artifactId>flux-mdr-plugin-mare</artifactId>
+    <version>${uvms.plugins.flux.mdr.version}</version>
+    <packaging>pom</packaging>
+    <description>Plugin for MDR related communication with FLUX</description>
 
     <properties>
         <!-- sonar -->
@@ -21,6 +21,9 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.jacoco.reportPath>${project.basedir}/target/coverage-reports/jacoco-unit.exec</sonar.jacoco.reportPath>
         <sonar.language>java</sonar.language>
+
+        <exchange.model.version>${uvms.exchange.model.version}</exchange.model.version>
+        <uvms.commons.version>${uvms.commonsLibrary.version}</uvms.commons.version>
 
         <maven.release.plugin.version>2.5.2</maven.release.plugin.version>
         <maven.scm.provider.version>2.1.1</maven.scm.provider.version>
@@ -31,10 +34,7 @@
         <sl4j.version>1.7.7</sl4j.version>
         <logback.version>1.1.2</logback.version>
         <logback.core.version>1.1.2</logback.core.version>
-        <audit.model.version>1.0.3</audit.model.version>
-        <exchange.model.version>4.0.35-SNAPSHOT</exchange.model.version>
         <commons.lang.version>2.6</commons.lang.version>
-        <uvms.commons.version>3.4-SNAPSHOT</uvms.commons.version>
         <lombok.version>1.16.18</lombok.version>
         <jboss.connector.api.version>RELEASE</jboss.connector.api.version>
 

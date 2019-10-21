@@ -9,7 +9,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
         <artifactId>flux-mdr-plugin-mare</artifactId>
-        <version>1.0.8-SNAPSHOT</version>
+        <version>${uvms.plugins.flux.mdr.version}</version>
     </parent>
 
     <build>
