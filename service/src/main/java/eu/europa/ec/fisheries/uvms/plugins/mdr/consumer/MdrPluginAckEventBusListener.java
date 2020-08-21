@@ -72,7 +72,7 @@ public class MdrPluginAckEventBusListener implements MessageListener {
             }
 
         } catch (ExchangeModelMarshallException | NullPointerException e) {
-            LOG.error("[ Error when receiving message in mdr ]", e);
+            LOG.error("Error when receiving message in mdr ", e);
         }
     }
 

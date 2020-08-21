@@ -34,6 +34,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -83,7 +88,7 @@ public class PluginNameEventBusListener implements MessageListener {
                     break;
             }
         } catch (NullPointerException | JMSException | JAXBException e) {
-            log.error("[ Error when receiving message in mdr plugin" + startup.getRegisterClassName() + " ]", e);
+            log.error("Error when receiving message in mdr plugin" + startup.getRegisterClassName() , e);
         }
         if (StringUtils.isNotEmpty(strRequest)) {
             try {

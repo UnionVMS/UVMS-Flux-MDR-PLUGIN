@@ -19,11 +19,11 @@ public abstract class BaseMdrPluginBean {
 
     private EntityManager em;
 
-    @PersistenceContext(unitName = "mdrPluginPUOracle")
-    private EntityManager oracle;
+//    @PersistenceContext(unitName = "mdrPluginPUOracle")
+//    private EntityManager oracle;
 
     protected void initEntityManager() {
-        em = oracle;
+//        em = oracle;
     }
 
     protected EntityManager getEntityManager() {
