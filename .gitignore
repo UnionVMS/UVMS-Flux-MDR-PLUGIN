@@ -7,3 +7,4 @@ plugin.properties
 .classpath
 .settings/
 pom.xml.versionsBackup
+.idea/
